@@ -31,14 +31,22 @@ The resulting linear system is assembled using NAPy’s internal FEM infrastruct
 - (Optional) meshio or gmsh for mesh import/export
 
 ## Usage
+
+See the [multicell profile example](https://github.com/tiagoburiol/napy.torsion/blob/main/notebooks/multicell_profile_example.ipynb).
+
+![Distribution of the warping function and Shear stress distribution](https://github.com/tiagoburiol/napy.torsion/blob/main/imagens/fig1_readme.png?raw=true)
+
+
+Or
+
 ```bash
 # Clone the repository
 git clone https://github.com/yourusername/napy-torsion.git
 cd napy-torsion
 
 
-# Example: run torsion analysis
-python examples/saint_venant_torsion.py
+# Example: open the multicell profile example using jupyter
+jupyter-notebook notebooks/multicell_profile_example.ipynb
 ```
 
 ## Citation
