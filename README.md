@@ -6,7 +6,8 @@ A Saint-Venant Torsion Module for the NAPy Finite Element Framework
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 ## Overview
-This repository contains the **Saint-Venant Torsion Module**, developed for the **NAPy Finite Element Framework** — a Python-based environment for numerical simulation in solid and structural mechanics.
+This repository contains the **Saint-Venant Torsion Module**, developed for the **NAPy Finite Element Framework**, a Python-based environment for numerical simulation in solid and structural mechanics, which is an ongoing development project.
+
 
 **NAPy**, short for **Numeric AirPlane**, was originally conceived as a computational platform for the numerical analysis of aerospace structures. Over time, it has evolved into a general-purpose finite element framework designed for research, education, and engineering applications.
 
