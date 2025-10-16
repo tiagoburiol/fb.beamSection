@@ -1,12 +1,16 @@
-from .fem_geometry import *
+from .fem_geometry          import *
+
 import numpy as np
 import matplotlib.pyplot as plt
-import logging
 import time
 
+from matplotlib             import gridspec, tri
+from matplotlib.patches     import Polygon
+from matplotlib.axes._axes  import Axes
+
 # Sparse matrix funtions  
-from scipy.sparse import lil_matrix, csr_matrix
-from scipy.sparse.linalg import spsolve
+from scipy.sparse           import lil_matrix, csr_matrix
+from scipy.sparse.linalg    import spsolve
 
 ## ---------------------------------------------------------------- ##
 ##                             2D Section                           ##
@@ -330,14 +334,8 @@ class BeamSection(Mesh, SectionElem):
                         # Integrated Function _______________
                         Fy = N@ys.reshape(-1,1)
                         Fz = N@zs.reshape(-1,1)
-                        try:
-                            FF = Fy@Fy + Fz@Fz + Fy@Bz@phi - Fz@By@phi
-                        except:
-                            logging.error(f'''{ys.shape =}
-                                          \n{By.shape =}
-                                          \n{Fy.shape =}
-                                          \n{elementDof =}
-                                          \n{phi.shape =}''')
+                        FF = Fy@Fy + Fz@Fz + Fy@Bz@phi - Fz@By@phi
+
                         J_phi += weights[i]*weights[j]*J*FF
                         J_phi_weighted_G += weights[i]*weights[j]*J*FF * G/G0
             else:
@@ -976,8 +974,6 @@ class BeamSection(Mesh, SectionElem):
         ax : matplotlib.axes.Axes
             The axes object with the plotted warping results.
         '''
-        import matplotlib.tri as tri 
-        import matplotlib.pyplot as plt
 
         phi = np.array(self.displacements).reshape(-1)
         if twistRate != None:
@@ -1048,8 +1044,6 @@ class BeamSection(Mesh, SectionElem):
 
         # Show mesh
         if showMesh:
-            from matplotlib.patches import Polygon
-
             for elem in self._elements:
                 # Node coordinates
                 nodesCoords = elem.getNodeCoords()
@@ -1107,8 +1101,6 @@ class BeamSection(Mesh, SectionElem):
         fillColor : str, optional
             The color to fill the element polygons. The default is '#59c1f9'.
         '''
-        import matplotlib.pyplot as plt
-        from matplotlib.patches import Polygon
 
         fig, ax      = plt.subplots(figsize=figsize)
         
@@ -1231,7 +1223,6 @@ class BeamSection(Mesh, SectionElem):
         
 
         ## ------------------------- PLOTTING ------------------------- ##
-        import matplotlib.pyplot as plt
         # Font options
         fontkwargs = dict(fontname='Times New Roman', usetex=False, fontsize=18)
         
@@ -1260,11 +1251,7 @@ class BeamSection(Mesh, SectionElem):
                 
                 # Set colobar ticks to 10 equaly spaced values between min and max magnitudes
                 if 'ticks' not in cbarKwargs:
-                    cbarKwargs['ticks'] = np.linspace(minMag,maxMag,11)
-                    
-                # print(f'Max. magnitude: {np.max(mag)}')
-                # print(f'Avg. magnitude: {np.mean(mag)}')
-                # print(f'Min. magnitude: {np.min(mag)}')
+                    cbarKwargs['ticks'] = np.linspace(minMag,maxMag,11)                    
                 
                 # Calculate normilized vectors
                 (U, V) = (tau_xy/mags, tau_xz/mags) if vectorUnits else (tau_xy, tau_xz)
@@ -1287,8 +1274,6 @@ class BeamSection(Mesh, SectionElem):
 
             ## COMPONENTS AS SCALAR FIELDS
             case 'scalar':
-                # import matplotlib.tri as tri 
-                from matplotlib import gridspec, tri
 
                 # Putting vectors in n_elem x n_gp format
                 Y_gauss     = np.reshape(Y_gauss,[self.nElements,-1]) + Y_CT
@@ -1381,8 +1366,6 @@ class BeamSection(Mesh, SectionElem):
 
         # If showMesh is requested
         if showMesh:
-            from matplotlib.patches import Polygon
-            from matplotlib.axes._axes import Axes
             for elem in self._elements:
                 # Node coordinates
                 nodesCoords = elem.getNodeCoords()
