@@ -34,7 +34,7 @@ The resulting linear system is assembled using NAPy’s internal FEM infrastruct
 
 See the [multicell profile example](https://github.com/tiagoburiol/napy.torsion/blob/main/notebooks/multicell_profile_example.ipynb).
 
-![Distribution of the warping function and Shear stress distribution](https://github.com/tiagoburiol/napy.torsion/blob/main/imagens/fig1_readme.png?raw=true)
+![Distribution of the warping function and Shear stress distribution](https://github.com/tiagoburiol/napy.torsion/blob/main/images/fig1_readme.png?raw=true)
 
 
 Or
