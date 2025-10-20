@@ -6,12 +6,13 @@ A Saint-Venant Torsion Module for the NAPy Finite Element Framework
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 ## Overview
-This repository contains the **Saint-Venant Torsion Module**, developed for the **NAPy Finite Element Framework**, a Python-based environment for numerical simulation in solid and structural mechanics, which is an ongoing development project.
 
+This repository contains the **Saint-Venant Torsion Module**, developed for the **NAPy Finite Element Framework**, a Python-based environment for numerical simulation in solid and structural mechanics, which is an ongoing development project.
 
 **NAPy**, short for **Numeric AirPlane**, was originally conceived as a computational platform for the numerical analysis of aerospace structures. Over time, it has evolved into a general-purpose finite element framework designed for research, education, and engineering applications.
 
 ## Features
+
 - Implements the **classical Saint-Venant torsion theory**.  
 - Computes **shear stress distribution**, **torsional stiffness**, and **warping functions**.  
 - Fully written in **Python**, using an **object-oriented and modular design**.  
@@ -20,10 +21,12 @@ This repository contains the **Saint-Venant Torsion Module**, developed for the 
 - Ready for extension to **nonlinear torsion**, **coupled problems**, and **aeroelastic analyses**.
 
 ## Implementation Notes
+
 The finite element formulation adopted in this module follows the standard weak form of Saint-Venant’s torsion problem.  
 The resulting linear system is assembled using NAPy’s internal FEM infrastructure, ensuring compatibility with other NAPy modules.
 
 ## Requirements
+
 - Python ≥ 3.10  
 - NumPy  
 - SciPy  
@@ -35,7 +38,6 @@ The resulting linear system is assembled using NAPy’s internal FEM infrastruct
 See the [multicell profile example](https://github.com/tiagoburiol/napy.torsion/blob/main/notebooks/multicell_profile_example.ipynb).
 
 ![Distribution of the warping function and Shear stress distribution](https://github.com/tiagoburiol/napy.torsion/blob/main/images/fig1_readme.png?raw=true)
-
 
 Or
 
@@ -49,7 +51,12 @@ cd napy-torsion
 jupyter-notebook notebooks/multicell_profile_example.ipynb
 ```
 
+## Verification
+
+For a few exemples the `.inp` files can be found at the [verification_files](https://github.com/tiagoburiol/napy.torsion/blob/main/verification_files) folder in a compacted `.7z` format.
+
 ## Citation
+
 If you use this module in your research, please cite it as:
 
 > Pedro F. M. Pires, Pedro F. M., Buriol, Tiago M. e Santos, Tiago dos (2025). *Saint-Venant Torsion Module for the NAPy Finite Element Framework*. GitHub repository.  
