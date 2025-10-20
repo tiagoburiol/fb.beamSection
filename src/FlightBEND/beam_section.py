@@ -46,24 +46,37 @@ class BeamSection(Mesh, SectionElem):
         Print assembly, solving and integration times at the end, default = True.
     '''
     def __init__(self, 
-                 elems:         list[Elem2D]        = None, 
-                 coordinates:   list[list[float]]   = None, 
-                 connectivity:  list[list[int]]     = None,
-                 young:         list[list[int]]     = None,
-                 nu:            list[list[int]]     = None,
-                 rho:           list[list[int]]     = None,
-                 intDegree:     int                 = 4,
-                 displayTimes:  bool                = True,
+                 elems:         list[Elem2D]          = None, 
+                 coordinates:   list[list[float]]     = None, 
+                 connectivity:  list[list[int]]       = None,
+                 young:         list[list[int]]|float = None,
+                 nu:            list[list[int]]|float = None,
+                 rho:           list[list[int]]|float = None,
+                 intDegree:     int                   = 4,
+                 displayTimes:  bool                  = True,
                  ):
 
         ## Inheritance from the 2D mesh class
         Mesh.__init__(self,SectionElem,elems,coordinates,connectivity)
         
         # Material properties
-        self.E                  = young
-        self.nu                 = nu
+        if np.shape(young) == ():
+            self.E      = young*np.ones(np.shape(connectivity))
+        else:
+            self.E      = young
+            
+        if np.shape(nu) == ():
+            self.nu     = nu*np.ones(np.shape(connectivity))
+        else:
+            self.nu     = nu
+            
+        if np.shape(rho) == ():
+            self.rho    = young*np.ones(np.shape(connectivity))
+        else:
+            self.rho    = rho
+            
+            
         self.G                  = self.E / (2*(1 + self.nu))
-        self.rho                = rho
         self.nElements          = len(connectivity)
         self.nNodes             = len(connectivity[0])
         self.totalDofs          = self._nDofs
@@ -1168,6 +1181,7 @@ class BeamSection(Mesh, SectionElem):
                           vectorStep    :int    = 1, 
                           figsize       :tuple  = (6,4), 
                           cbarKwargs    :dict   = dict(),
+                          cmap          :str    = 'jet',
                           **kwargs) -> tuple[plt.Figure, plt.Axes]:
         '''
         Plots shear stresses for visualization of the shear flow.
@@ -1197,6 +1211,8 @@ class BeamSection(Mesh, SectionElem):
             Plot the equivalent von Mises shear stress. The default is False.
         cbarKwargs : dict, optional
             Keyword arguments to pass to the plt.colorbar function. The default is dict().
+        cmap : str, optional
+            Color map for filled contour plot. Check possible options on ``matplotlib.colormaps``. Default: 'jet'. 
         **kwargs : dict
             Additional keyword arguments for the plotting function (e.g., quiver or tricontourf).
 
@@ -1259,7 +1275,8 @@ class BeamSection(Mesh, SectionElem):
                 # Plot vector field
                 plot    = ax.quiver(Y[::vectorStep]+Y_CT, Z[::vectorStep]+Z_CT,
                                     U[::vectorStep], V[::vectorStep], 
-                                    mags[::vectorStep], cmap='jet', pivot='mid', units='xy', **kwargs)
+                                    mags[::vectorStep], cmap=cmap, pivot='mid', 
+                                    units='xy', **kwargs)
                 
                 # Create color bar
                 cbar    = plt.colorbar(plot, **cbarKwargs)
@@ -1328,12 +1345,12 @@ class BeamSection(Mesh, SectionElem):
                 if 'ticks' not in cbarKwargs:
                     cbarKwargs['ticks'] = np.linspace(minPlot,maxPlot,11)
                 
-                plot    = ax[0].tricontourf(triang, tau_xy, cmap='jet', **kwargs)
+                plot    = ax[0].tricontourf(triang, tau_xy, cmap=cmap, **kwargs)
 
                 # Add labels
-                ax[0].set_title(r'$\tau_{xy}$', usetex=True, fontsize=24)
-                ax[0].set_xlabel(r'$Y$'             , **fontkwargs)
-                ax[0].set_ylabel(r'$Z$'             , **fontkwargs)
+                ax[0].set_title(r'$\tau_{xy}$'  , usetex=True, fontsize=24)
+                ax[0].set_xlabel(r'$Y$'         , **fontkwargs)
+                ax[0].set_ylabel(r'$Z$'         , **fontkwargs)
                 ax[0].set_aspect('equal', adjustable='box')
                 # ax[0].axis('tight')
                 
@@ -1346,23 +1363,27 @@ class BeamSection(Mesh, SectionElem):
                 # Max and min stresses
                 maxPlot     = np.max(tau_xz) 
                 minPlot     = np.min(tau_xz) 
-                color_kw    = dict(vmax=maxPlot, vmin=minPlot)
                 
-                plot    = ax[1].tricontourf(triang, tau_xz, cmap='jet', **color_kw, **kwargs)
+                plot    = ax[1].tricontourf(triang, tau_xz, cmap=cmap, 
+                                            vmax=maxPlot, vmin=minPlot, 
+                                            **kwargs)
 
                 # Add labels
-                ax[1].set_title(r'$\tau_{xz}$', usetex=True, fontsize=24)
-                ax[1].set_xlabel(r'$Y$'               , **fontkwargs)
-                ax[0].set_ylabel(r'$Z$'             , **fontkwargs)
+                ax[1].set_title(r'$\tau_{xz}$'  , usetex=True, fontsize=24)
+                ax[1].set_xlabel(r'$Y$'         , **fontkwargs)
+                ax[0].set_ylabel(r'$Z$'         , **fontkwargs)
                 ax[1].set_aspect('equal', adjustable='box')
                 # ax[1].axis('tight')
                 
                 # Colorbar
-                cbar    = plt.colorbar(plot, ax=ax[1], fraction=0.035, pad=0.04, use_gridspec=True, **cbarKwargs)
+                cbar    = plt.colorbar(plot, ax=ax[1], 
+                                       fraction=0.035, pad=0.04, 
+                                       use_gridspec=True, 
+                                       **cbarKwargs)
                 cbar.set_label(labelBar , **fontkwargs)
 
             case _:
-                raise Exception('Invalid mode')     # Invalid mode
+                raise Exception(f"Invalid mode: {mode}. Should be 'vector' or 'scalar'.")     # Invalid mode
 
         # If showMesh is requested
         if showMesh:
@@ -1402,7 +1423,7 @@ class BeamSection(Mesh, SectionElem):
                     ax[1].add_patch(poly2)
                     # {axes.add_patch(poly) for axes in ax}
                 else:
-                    raise Exception('Error in plot')
+                    raise Exception(f'Plot object type {type(ax)} not valid.')
         
         fig.tight_layout()
 
