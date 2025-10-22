@@ -61,26 +61,26 @@ class BeamSection(Mesh, SectionElem):
         
         # Material properties
         if np.shape(young) == ():
-            self.E      = young*np.ones(np.shape(connectivity))
+            self.E      = young*np.ones(np.shape(connectivity)[0])
         else:
             self.E      = young
             
         if np.shape(nu) == ():
-            self.nu     = nu*np.ones(np.shape(connectivity))
+            self.nu     = nu*np.ones(np.shape(connectivity)[0])
         else:
             self.nu     = nu
             
         if np.shape(rho) == ():
-            self.rho    = young*np.ones(np.shape(connectivity))
+            self.rho    = young*np.ones(np.shape(connectivity)[0])
         else:
             self.rho    = rho
             
             
         self.G                  = self.E / (2*(1 + self.nu))
-        self.nElements          = len(connectivity)
         self.nNodes             = len(connectivity[0])
         self.totalDofs          = self._nDofs
         self.totalNodes         = len(coordinates)
+        self.totalElements      = len(connectivity)
         
         # Properties for the warping boundary value problem
         self.activeDof          = None
@@ -354,8 +354,8 @@ class BeamSection(Mesh, SectionElem):
             else:
                 raise Exception('Element type not recognized')
                 
-        self.areaProperties.update(torsionalConstant= float(J_phi),
-                                   torsionalConstant_weighted_G = float(J_phi_weighted_G))
+        self.areaProperties.update(J_phi= float(J_phi),
+                                   J_phi_weighted_G = float(J_phi_weighted_G))
 
         return
     ## AREA PROPERTIES
@@ -381,7 +381,7 @@ class BeamSection(Mesh, SectionElem):
         # Ys = self._nodeCoords[vn,1]
         # Zs = self._nodeCoords[vn,2]
 
-        # for e in range(self.nElements):
+        # for e in range(self.totalElements):
         for e,elem in enumerate(self._elements):
 
             # Degrees of freedom for the element
@@ -539,7 +539,7 @@ class BeamSection(Mesh, SectionElem):
         # Ys = self._nodeCoords[vn,1]
         # Zs = self._nodeCoords[vn,2]
 
-        # for e in range(self.nElements):
+        # for e in range(self.totalElements):
         for e,elem in enumerate(self._elements):
 
             # Degrees of freedom for the element
@@ -945,7 +945,7 @@ class BeamSection(Mesh, SectionElem):
                     twistRate   :float  = None, 
                     fignum      :int    = None, 
                     figsize     :tuple  = None,
-                    unit        :str    = 'l.u.', 
+                    lengthUnits :str    = 'l.u.', 
                     showMesh    :bool   = False, 
                     showCT      :bool   = True, 
                     showCG      :bool   = True, 
@@ -967,7 +967,7 @@ class BeamSection(Mesh, SectionElem):
             Figure number. The default is None.
         figsize : tuple, optional
             Figure size (width, height). The default is None.
-        unit : str, optional
+        lengthUnits : str, optional
             Length unit used in the section's coordinates. The default is 'l.u.' (length units).
         showMesh : bool, optional
             Draws the underlying mesh elements. The default is False.
@@ -992,10 +992,10 @@ class BeamSection(Mesh, SectionElem):
         if twistRate != None:
             phi = twistRate*phi
             # label = fr'$\mathrm{{Warping \ Displacement }} \ \alpha\varphi^h$ [\mathrm{{{unit}}}]'+'\n'+ fr'$\alpha = {twistRate:.3e} \ [\mathrm{{rad/{{{unit}}}}}]$'
-            label = f'Warping Displacement $\\alpha\\varphi^h$ [{unit}]'+'\n'+ f'$\\alpha$ = {twistRate:.3e} [rad/{unit}]'
+            label = f'Warping Displacement $\\alpha\\varphi^h$ [{lengthUnits}]'+'\n'+ f'$\\alpha$ = {twistRate:.3e} [rad/{lengthUnits}]'
         else:
             # label = fr'$\mathrm{{Warping \ Function }} \ \varphi^h \ \left[ \mathrm{{{unit}}}^2 \right]$'
-            label = f'Warping Function $\\varphi^h$ [{unit}²]'
+            label = f'Warping Function $\\varphi^h$ [{lengthUnits}²/rad]'
         
         # Get all coordinates
         Y   = np.array(self._nodeCoords)[:,1].reshape(-1)
@@ -1093,8 +1093,8 @@ class BeamSection(Mesh, SectionElem):
         # ax.set_title(f'Cross Section',fontsize=14,fontweight='bold')
         # ax.set_xlim([np.min(Y),np.max(Y)])
         # ax.set_ylim([np.min(Z),np.max(Z)])
-        ax.set_xlabel(f'$Y$ [{unit}]',**fontkwargs)
-        ax.set_ylabel(f'$Z$ [{unit}]',**fontkwargs)
+        ax.set_xlabel(f'$Y$ [{lengthUnits}]',**fontkwargs)
+        ax.set_ylabel(f'$Z$ [{lengthUnits}]',**fontkwargs)
         ax.tick_params(axis='y',labelsize=12)
         ax.tick_params(axis='x',labelsize=12)
         plt.legend(loc='center right')
@@ -1175,7 +1175,8 @@ class BeamSection(Mesh, SectionElem):
                           twistRate     :float  = None, 
                           mises         :bool   = False,
                           mode          :str    = 'vector', 
-                          unit          :str    = 'Mpa',
+                          stressUnits   :str    = 's.u.',
+                          lengthUnits   :str    = 'l.u.',
                           showMesh      :bool   = True, 
                           vectorUnits   :bool   = True, 
                           vectorStep    :int    = 1, 
@@ -1199,7 +1200,9 @@ class BeamSection(Mesh, SectionElem):
             Show the mesh on the plot. The default is True.
         twistRate : float, optional
             Torsion rate ($\alpha$). If not provided, stresses are given per unit of alpha. The default is None.
-        unit : str, optional
+        lengthUnits : str, optional
+            Length unit of measure. The default is 'mm'.
+        stressUnits : str, optional
             Stress unit of measure. The default is 'Mpa'.
         vectorUnits : bool, optional
             Use normalized vectors in vector mode. The default is True.
@@ -1245,14 +1248,14 @@ class BeamSection(Mesh, SectionElem):
         # Determine colorbar label 
         if twistRate is not None:
             if mises:
-                labelBar = r'$\sqrt{3}| \tau | $' + f' [{unit}]'
+                labelBar = r'$\sqrt{3}| \tau | $' + f' [{stressUnits}]'
             else:
-                labelBar = r'$| \tau | $' + f' [{unit}]'            
+                labelBar = r'$| \tau | $' + f' [{stressUnits}]'            
         else:
             if mises:
-                labelBar = r'$\sqrt{3}| \tau | / \alpha $' + fr' $[\mathrm{{{unit}}}\cdot\mathrm{{mm/rad}}]$'
+                labelBar = r'$\sqrt{3}| \tau | / \alpha $' + fr' $[\mathrm{{{stressUnits}}}\cdot\mathrm{{{lengthUnits}/rad}}]$'
             else:    
-                labelBar = r'$| \tau | / \alpha $' + fr' $[\mathrm{{{unit}}}\cdot\mathrm{{mm/rad}}]$'
+                labelBar = r'$| \tau | / \alpha $' + fr' $[\mathrm{{{stressUnits}}}\cdot\mathrm{{{lengthUnits}/rad}}]$'
             
         # Select the plot type: vector or scalar
         match mode:
@@ -1293,8 +1296,8 @@ class BeamSection(Mesh, SectionElem):
             case 'scalar':
 
                 # Putting vectors in n_elem x n_gp format
-                Y_gauss     = np.reshape(Y_gauss,[self.nElements,-1]) + Y_CT
-                Z_gauss     = np.reshape(Z_gauss,[self.nElements,-1]) + Z_CT
+                Y_gauss     = np.reshape(Y_gauss,[self.totalElements,-1]) + Y_CT
+                Z_gauss     = np.reshape(Z_gauss,[self.totalElements,-1]) + Z_CT
 
                 # Create figure and axes
                 fig, ax = plt.subplots(figsize=(figsize[0],2*figsize[1]), nrows=2, sharex=True, sharey=True, num='Shear Stresses Scalar')         
@@ -1440,7 +1443,7 @@ class BeamSection(Mesh, SectionElem):
             The base filename for the .flavia.msh and .flavia.res files.
         '''
 
-        nelem   = self.nElements        # number of elements
+        nelem   = self.totalElements        # number of elements
         nnode   = self.nNodes           # number of nodes per element
         npnod   = self.totalDofs       # total number of nodes
 
