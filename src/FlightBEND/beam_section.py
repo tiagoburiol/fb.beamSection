@@ -3,6 +3,7 @@ from .fem_geometry          import *
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+from itertools import product
 
 from matplotlib             import gridspec, tri
 from matplotlib.patches     import Polygon
@@ -950,6 +951,7 @@ class BeamSection(Mesh, SectionElem):
                     showCT      :bool   = True, 
                     showCG      :bool   = True, 
                     cbarKwargs  :dict   = {},
+                    fontname    :str    = 'serif',
                     **kwargs):
         '''
         Plots the warping function ($\varphi$) distribution or the warping displacement ($\alpha\varphi$) 
@@ -1005,7 +1007,7 @@ class BeamSection(Mesh, SectionElem):
         fig, ax = plt.subplots(num=fignum,figsize=figsize)
         
         # Font options
-        fontkwargs = dict(fontname='Times New Roman', usetex=False, fontsize=18)
+        fontkwargs = dict(fontname=fontname, usetex=False, fontsize=18)
         # fontkwargs = dict(fontname='Times New Roman', usetex=True, fontsize=18)
         
         # Deviding the element into triangular regions, suitable for use in tricontouf
@@ -1183,6 +1185,7 @@ class BeamSection(Mesh, SectionElem):
                           figsize       :tuple  = (6,4), 
                           cbarKwargs    :dict   = dict(),
                           cmap          :str    = 'jet',
+                          fontname      :str    = 'serif',
                           **kwargs) -> tuple[plt.Figure, plt.Axes]:
         '''
         Plots shear stresses for visualization of the shear flow.
@@ -1216,6 +1219,8 @@ class BeamSection(Mesh, SectionElem):
             Keyword arguments to pass to the plt.colorbar function. The default is dict().
         cmap : str, optional
             Color map for filled contour plot. Check possible options on ``matplotlib.colormaps``. Default: 'jet'. 
+        fontname: str, optional
+            Font for the plots.
         **kwargs : dict
             Additional keyword arguments for the plotting function (e.g., quiver or tricontourf).
 
@@ -1243,7 +1248,7 @@ class BeamSection(Mesh, SectionElem):
 
         ## ------------------------- PLOTTING ------------------------- ##
         # Font options
-        fontkwargs = dict(fontname='Times New Roman', usetex=False, fontsize=18)
+        fontkwargs = dict(fontname=fontname, usetex=False, fontsize=18)
         
         # Determine colorbar label 
         if twistRate is not None:
@@ -1305,36 +1310,43 @@ class BeamSection(Mesh, SectionElem):
                 
                 # Creating a triangulation connectivity for gauss points, suitable for use in tricontouf
                 nPoints = Y_gauss.shape[0]*Y_gauss.shape[1]
-                gauss_connec = np.arange(nPoints).reshape(Y_gauss.shape)                
+                gauss_connec = np.arange(nPoints).reshape(Y_gauss.shape)
                 
-                match Y_gauss.shape[1]:
-                    case 3:
-                        t0 = gauss_connec[:,[0,1,2]]
-                        connect = t0
-                    case 6:
-                        t0 = gauss_connec[:,[0,1,4]]
-                        t1 = gauss_connec[:,[1,2,4]]
-                        t2 = gauss_connec[:,[2,5,4]]
-                        t3 = gauss_connec[:,[5,6,4]]
-                        t4 = gauss_connec[:,[6,3,4]]
-                        t5 = gauss_connec[:,[3,0,4]]
-                        connect = np.vstack([t0,t1,t2,t3,t4,t5])
-                    case 4:
-                        t0 = gauss_connec[:,[0,1,3]]
-                        t1 = gauss_connec[:,[3,2,0]]
-                        connect = np.vstack([t0,t1])
-                    case 9:
-                        t0 = gauss_connec[:,[0,1,4]]
-                        t1 = gauss_connec[:,[1,2,4]]
-                        t2 = gauss_connec[:,[2,5,4]]
-                        t3 = gauss_connec[:,[5,8,4]]
-                        t4 = gauss_connec[:,[8,7,4]]
-                        t5 = gauss_connec[:,[7,6,4]]
-                        t6 = gauss_connec[:,[6,3,4]]
-                        t7 = gauss_connec[:,[3,0,4]]
-                        connect = np.vstack([t0,t1,t2,t3,t4,t5,t6,t7])
-                    case _:
-                        raise NotImplementedError(f'Triagulation not implemented for degree {degree} quadrature points.')
+                # Triangulation for quads is straightforward
+                #
+                # (k + Ngp*m)  ---------- (k + Ngp*m + 1) 
+                #    |                       .     |
+                #    |      t2          .          |
+                #    |             .               |
+                #    |        .          t1        |
+                #    |   .                         |
+                #   (k) ------------------------ (k+1) 
+                # k = n + Ngp*m
+                # t1 = (k, k+1, k+Ngp*m)
+                # t2 = (k, (k+1+Ngp*m, k+Ngp*m)
+                if self.elemType == 'Quad':
+                    Ngp = Y_gauss.shape[1]
+                    connect = np.array([])
+                    for n,m in product(range(Ngp),range(Ngp)):
+                        k = n + Ngp*m
+                        t1 = gauss_connec[:,[k,k+1,k+Ngp*m]]
+                        t2 = gauss_connec[:,[k,k+Ngp*m+1,k+Ngp*m]]
+                        np.vstack([connect, t1, t2])
+                else: 
+                    match Y_gauss.shape[1]:
+                        case 3:
+                            t0 = gauss_connec[:,[0,1,2]]
+                            connect = t0
+                        case 6:
+                            t0 = gauss_connec[:,[0,1,4]]
+                            t1 = gauss_connec[:,[1,2,4]]
+                            t2 = gauss_connec[:,[2,5,4]]
+                            t3 = gauss_connec[:,[5,6,4]]
+                            t4 = gauss_connec[:,[6,3,4]]
+                            t5 = gauss_connec[:,[3,0,4]]
+                            connect = np.vstack([t0,t1,t2,t3,t4,t5])
+                        case _:
+                            raise NotImplementedError(f'Triagulation not implemented for degree {degree} quadrature points.')
 
                 # Create triangulation for tricontour plot
                 triang  = tri.Triangulation(Y_gauss.reshape(-1),Z_gauss.reshape(-1),connect)
