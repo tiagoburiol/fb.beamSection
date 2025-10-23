@@ -54,7 +54,7 @@ jupyter-notebook notebooks/multicell_profile_example.ipynb
 
 Other examples of usage can be found in [fb.beamSection/examples](https://github.com/tiagoburiol/fb.beamSection/tree/main/examples). The figure below is from the [wing_torsion_box.ipynb](https://github.com/tiagoburiol/fb.beamSection/blob/main/examples/5_wing_torsion_box/wing_torsion_box.ipynb) example.
 
-![Warping function](https://github.com/tiagoburiol/fb.beamSection/blob/main/images/fig2_readme.png?raw=true)
+![Warping function](https://raw.githubusercontent.com/tiagoburiol/fb.beamSection/refs/heads/main/images/fig2_readme.png)
 
 ## Verification
 
