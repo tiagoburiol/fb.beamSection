@@ -1,4 +1,4 @@
-## Mesh generation with GiD and MAT-Fem
+# Mesh generation with GiD and MAT-Fem
 
 ---
 
@@ -18,65 +18,69 @@ Along with GiD, we use the [MAT-Fem](https://www.gidsimulation.com/downloads/edu
 
 To download MAT-Fem visit the [GiD downloads page](https://www.gidsimulation.com/downloads/educational-finite-element-codes-matfem/).
 
-* You can install MAT-Fem by simply locating the `problem types` folder on GiD's installation folder (default: C:\Program Files\GiD\GiD <version>\problemtypes)
+* You can install MAT-Fem by putting the downloaded file on the `problem types` folder on GiD's installation folder (default: *C:\Program Files\GiD\GiD <version>\problemtypes*)
 
-* As a plugin MAT-Fem, can be also be used from __*Data > Problem Type > Load*__  tab on GiD. On the *Read Problem Type* window navigate to the folder where `MAT-Fem.gid` is downloaded and click **Open**. 
+* MAT-Fem, can also be initialized from __*Data > Problem Type > Load*__  tab on GiD. On the *Read Problem Type* window navigate to the folder where `MAT-Fem.gid` is downloaded and click **Open**. 
 
-#### .bas File
+#### The .bas File
 
-* You can also place the `MAT-fem_Python_Multimat_dens.bas` file from this repository in the Tamplates folder on GiD's installation folder (default: C:\Program Files\GiD\GiD <version>\templates) if you wish for it to be more easily accessed inside GiD as one of the options at ***Files > Export > Using template .bas (only mesh)***. 
+The .bas file is a template for exporting the mesh in a format suitable for use in FlightBEND.
+
+* You can also place the `MAT-fem_Python_Multimat_dens.bas` file from this repository in the Tamplates folder on GiD's installation folder (default: *C:\Program Files\GiD\GiD <version>\templates*) if you wish for it to be more easily accessed inside GiD as one of the options at ***Files > Export > Using template .bas (only mesh)***. 
 
 * Other-wise you'll have to go to t ***Files > Export > Using template .bas (only mesh) >  Others...*** and navigate to where the .bas file is located at every time you wish to export a mesh. 
 
-### Example
+## Steps
 
 ---
 
  After opening GiD, If you have MAT-Fem already installed in the`problem types` folder go to ***Data > Problem Type > MAT-Fem***, or go to __*Data > Problem Type > Load*__  and find where the MAT-Fem.gid file is. A welcome window (**Fig. 1**) wil appear and a new sidebar (**Fig. 2**) will be available. 
 
 | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/MAT-Fem_welcome.png "MAT-Fem Welcome") | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/MAT-Fem_sidebar.png "MAT-Fem Sidebar") |
-| --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **Fig. 1** -  MAT-Fem welcome window.                                                                           | **Fig. 2** -  MAT-Fem welcome window.                                                                           |
+| ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Fig. 1** -  MAT-Fem welcome window.                                                                             | **Fig. 2** -  MAT-Fem sidebar.                                                                                    |
 
-##### Draw Geometry
+### Draw Geometry
 
-Now you can draw the geometry for your cross-section as you wish. Use the ***create line*** ![](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/create_line "create line")tool to draw straight lines; the ***create arc***  ![](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/create_arc "create arc")for circular arcs and ***create nurbs line*** ![](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/create_nurbs_line "create nurbs line") for curves (splines). More options are also available on the ***Geometry*** tab (**Fig. 3**). GiD also has capabilities to import geometry from CAD editors and various image formats on the ***File > Import*** tab (**Fig. 4**). 
-
-available.
+Now you can draw the geometry for your cross-section as you wish. Use the ***create line*** ![](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/create_line "create line")tool to draw straight lines; the ***create arc***  ![](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/create_arc "create arc")for circular arcs and ***create nurbs line*** ![](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/create_nurbs_line "create nurbs line") for curves (splines). More options are also available on the ***Geometry*** tab (**Fig. 3**). GiD also has capabilities to import geometry from CAD editors and various formats on the ***File > Import*** tab (**Fig. 4**). 
 
 | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/GiD_geometry_tab.png "Geometry") | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/GiD_import.png "Import") |
-| ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
-| **Fig. 3** -  Geometry tab.                                                                                  | **Fig. 4** -  Import options.                                                                        |
+| -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Fig. 3** -  Geometry tab.                                                                                    | **Fig. 4** -  Import options.                                                                          |
 
-##### Define Surfaces
+### Define Surfaces
 
-It is important that you define *surfaces*  in the geometry so GiD undertands that 2D element meshes should be generated. To define a surface click the ***Create NURBS surface*** tool, select only the parts of the geometry that is closed by clicking and holding the left mouse button (**Fig. 5**) (make sure that the geometry is *closed*, otherwise the surface can't be defined) then press the ***Esc*** keyboard key to confirm your selection. Remember that in GiD, *to confirm a action you use the **Esc** key*! After that, if a valid surface is crated, a smaller copy of the geometry will appear in magenta color inside the original drawing (**Fig. 6**). 
+It is important that you define *surfaces*  in the geometry so GiD undertands that 2D element meshes should be generated. To define a surface click the ***Create NURBS surface*** tool, select only the parts of the geometry that is closed by clicking and holding the left mouse button (**Fig. 5**) (make sure that the geometry is *closed*, otherwise the surface can't be defined) then press the ***Esc*** keyboard key to confirm your selection. *<mark>Remember that in GiD, to confirm a action you use the **Esc** key! </mark>* After that, if a valid surface is crated, a smaller copy of the geometry will appear in magenta color inside the original drawing (**Fig. 6**). 
 
 | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/GiD_surface_select.png "Selecting geometry with NURBS surface tool") | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/GiD_surface.png "Surface created") |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **Fig. 5** -  Selecting geometry to define a surface.                                                                                         | **Fig. 6** -  Surface created successfully.                                                                 |
+| ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Fig. 5** -  Selecting geometry to define a surface.                                                                                           | **Fig. 6** -  Surface created successfully.                                                                   |
 
 
 
-##### Assign Material
+### Assign Material
 
-The most convenient way to assign material to geometry is before mesh creation, by assigning the material properties to surfaces. This way, if you wish/need to remesh the assigment stays defined. To do that, with the MAT-Fem sidebar, open click the ***Assign Material Properties***  ![](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/assign_material.png "Assign Material Properties")button. The Material window will appear (**Fig. 7**). You can directly edit the properties currently shown on the window and save you own material definition if you wish. GiD does export measument units, only the values  as they appear in the material window, so make sure to remember the units of length, stress and mass you used. Note: the thickness property is not used in our program, so it can be left as is. After filling the properties, click the ***Assign*** button then the ***Surfaces*** option (Fig. 7). Now you can select multiple surfaces to assign the current properties to. After selection (**Fig. 8**) press the ***Esc*** key to confirm. On the materials window you can alse use the ***Draw*** button to show the assignment of specific materials or all materials (Figs. 9 and 10) to verify if the assignment step was done correctly.
+The most convenient way to assign material to geometry is before mesh creation, by assigning the material properties to surfaces. This way, if you wish/need to regenerate the mesh the assigment stays defined. To do that, with the MAT-Fem sidebar, open click the ***Assign Material Properties***  ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/icons/assign_material.png "Assign Material Properties")button. The Materials window will appear (**Fig. 7**). You can directly edit the properties currently shown on the window and save you own material definition if you wish. GiD does export measument units, only the values  as they appear in the material window, so <mark>make sure to remember the units of length, stress and mass you used</mark>. 
+
+> Note: the thickness property is not used in our program, so it can be left as is. 
+
+After filling the properties, click the ***Assign*** button then the ***Surfaces*** option (**Fig. 7**). Now you can select multiple surfaces to assign the current properties to. After selection (**Fig. 8**) press the ***Esc*** key to confirm. On the materials window you can alse use the ***Draw*** button to show the assignment of specific materials or all materials (**Figs. 9** and **10**) to verify if the assignment step was done correctly.
 
 | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/MAT-Fem_material_window.png "Materials window")             | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/MAT-Fem_material_window_surface_select.png "Surface selected for material assignment") |
-| ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Fig. 7** -  MAT-Fem materials window.                                                                                              | **Fig. 8** -  Surface selected for material assignment.                                                                                                          |
+| -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Fig. 7** -  MAT-Fem materials window.                                                                                                | **Fig. 8** -  Surface selected for material assignment.                                                                                                            |
 | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/MAT-Fem_material_window_draw_material.png "Draw materials") | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/MAT-Fem_material_window_draw_material_show.png "Displaying assigned materials")         |
-| **Fig. 9** -  Draw material option.                                                                                                  | **Fig. 10** -  Displaying assigned material.                                                                                                                     |
+| **Fig. 9** -  Draw material option.                                                                                                    | **Fig. 10** -  Displaying assigned materials.                                                                                                                      |
 
-##### Assign Element Type and Order
+### Assign Element Type and Order
 
  By default, GiD generates 2D meshes with linear triangular elements, if you want other element type go to ***Mesh > Element Type*** and select either Triangle, or Quadrilateral (**Fig. 11**). **Important:** *To correctly generate quad meshes, make sure the surfaces are bounded by only 4 lines (which may be curved or straight), otherwise the mesh can't be generated*. After that you'll be prompted to select the geometry. After selection press the ***Esc*** key to confirm. To change the intepolation order go to **Mesh > Quadratic Type** and select between ***Normal (Linear)***, ***Quadratic*** or ***Quadratic9*** (**Fig. 12**). The last option is for complete quadratic Lagrange elements Tri-6 and Quad-9, the second is for Quad-8 serendipidy elements. The interpolation option is automaticaly applied to the entire mesh by GiD to ensure compatibility.
 
 | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/GiD_element_type.png "Element type selection") | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/GiD_element_order.png "Element order selection") |
-| ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| **Fig. 11** -  Selecting element type.                                                                                  | **Fig. 12** -  Selecting interpolation order.                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Fig. 11** -  Selecting element type.                                                                                    | **Fig. 12** -  Selecting interpolation order.                                                                               |
 
-##### Assign Mesh Parameters
+### Assign Mesh Parameters
 
 GiD is able to generate both unstructured (**Fig. 13**) and structured (**Fig. 14**) meshes and you have control over a few parameters so that the resulting mesh is adequate for your application. Under the options for ***structured*** meshes you'll have to select either ***lines*** or ***surfaces***  to assign parameters to. For surfaces you may choose to assign ***number of divisions*** or ***element size*** to any ***sides*** of a surface (**Fig. 14**). The same choices are applicable to the lines option. 
 
@@ -97,22 +101,22 @@ When assigning structured parameters to a surface take notice that the following
 If you wish to generate a unstructured mesh on a given surface, you may just select ***Mesh > Unstructured > Surfaces*** and select which surfaces may be left unstructured.
 
 | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/GiD_unstructured_mesh.png "Unstructured mesh") | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/GiD_structured_mesh_surface.png "Structured surface mesh options") |
-| -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Fig. 13** -  Unstructured mesh options.                                                                                  | **Fig. 14** -  Structured surface mesh options.                                                                                                |
+| ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Fig. 13** -  Unstructured mesh options.                                                                                    | **Fig. 14** -  Structured surface mesh options.                                                                                                  |
 
-##### Generate Mesh
+### Generate Mesh
 
-To generate the mesh you may use the ***Generate Mesh***  button from MAT-Fem, or access the tab ***Mesh > Generate Mesh***, or the keyboard shortcut Ctrl + G. The mesh generation window will appear (**Fig. 15**). The element size option will only apply to geometry that has not been given structured parameters. Type a element size of leave it as-is then click on **Ok**. The ***Progress in meshing*** window will appear and display a graph with the evolution of the meshing process over time. Pay special attention to the contex box above the graph, there will be show the type and number of elements generated. *<mark>Make sure no **line elements** are generated</mark>*. I there are, get rid of any single lines that are not conected to surfaces and mesh again. Also, <mark>*make sure only **a sigle type of element** is present*</mark> -- either triangles or quadrilaterals -- because our routine assumes the mesh is composed only of a single element type. Click on **View mesh** to see the result.
+To generate the mesh you may use the ***Generate Mesh*** ![](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/generate_mesh.png "Generate Mesh") button from MAT-Fem, or access the tab ***Mesh > Generate Mesh***, or the keyboard shortcut Ctrl + G. The mesh generation window will appear (**Fig. 15**). The element size option will only apply to geometry that has not been given structured parameters. Type a element size of leave it as-is then click on **Ok**. The ***Progress in meshing*** window will appear and display a graph with the evolution of the meshing process over time. Pay special attention to the contex box above the graph, there will be show the type and number of elements generated. *<mark>Make sure no **line elements** are generated</mark>*. I there are, get rid of any single lines that are not conected to surfaces and mesh again. Also, <mark>*make sure only **a sigle type of element** is present*</mark> -- either triangles or quadrilaterals -- because our routine assumes the mesh is composed only of a single element type. Click on **View mesh** to see the result.
 
 | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/GiD_mesh_generation_window.png "Generate mesh window") | ![](ttps://github.com/tiagoburiol/napy.torsion/blob/main/notebooks/imgs/GiD_progress_in_meshing.png "Progress in meshing ") |
-| ------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| **Fig. 15** - "Generate mesh" window.                                                                                                 | **Fig. 16** -  "Progress in meshing" window.                                                                                |
+| --------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Fig. 15** - "Generate mesh" window.                                                                                                   | **Fig. 16** -  "Progress in meshing" window.                                                                                |
 
-##### Export Mesh
+### Export Mesh
 
 After generation the mesh can be exported as various file types on **Files > Export**. To export a mesh compatible with FlightBEND use the `.bas` file provided in this folder and save it on the `templates` folder on GiD's intallation folder. This way, to export the mesh go to ***File > Export > Using template .bas (only mesh) > MAT-fem_Python_Multimat_dens.bas***. A dialog box will appear; navigate to a desired folder and *<mark>**don't forget to name the file with a ``.py``  extension**</mark>*.
 
-## Structured Mesh Exemple
+# Structured Mesh Exemple
 
 ---
 
@@ -160,7 +164,7 @@ Figs. 17 to XX show the steps to generate a structured mesh with 4 elements acro
 
 17. Export the mesh on ***File > Export > Using template .bas (only mesh) > MAT-fem_Python_Multimat_dens.bas***. making sure to give it a name and a .py extension.
 
-## Useful Tips for Geometry Editing
+# Useful Tips for Geometry Editing
 
 ---
 
