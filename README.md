@@ -62,7 +62,7 @@ The `.inp` files for the ABAQUS 3D exemples from the paper may be found at the [
 
 ## Mesh generation
 
-For all examples we used the mesh generation from the [GiD](https://www.gidsimulation.com/) pre-processing software. If you wish to create `.py` files like the ones from our examples you'll also need to install the [MATFem](https://www.gidsimulation.com/downloads/educational-finite-element-codes-matfem/) plugin and download our customized [.bas](https://github.com/tiagoburiol/fb.beamSection/blob/main/mesh_files) file. The plugin allows for element material assigment and the `.bas` file exports the mesh as a python dictionary saved in the variable `mesh_data` containing the keys `'materials'`, `'coordinates'` and `'elements'`. 
+For all examples we used the mesh generation from the [GiD](https://www.gidsimulation.com/) pre-processing software. If you wish to create `.py` files like the ones from our examples you'll also need to install the [MATFem](https://www.gidsimulation.com/downloads/educational-finite-element-codes-matfem/) plugin and download our customized [.bas](https://github.com/tiagoburiol/fb.beamSection/blob/main/mesh_files) file. The plugin allows for element material assigment and the `.bas` file exports the mesh as a python dictionary saved in the variable `mesh_data` containing the keys `'materials'`, `'coordinates'` and `'elements'`.  Check our tutorial on how to use GiD for this application on the [notebooks folder](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks).
 
 ## Citation
 
