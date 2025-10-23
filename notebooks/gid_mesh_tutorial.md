@@ -4,7 +4,7 @@
 
 ### 1.1. GiD
 
-GiD is a user-friendly pre and post-processing software developed by the International Center for Numerical Methods in Engineering [(CIMNE)](www.cimne.com) that is easy to use and customize.  The software handle meshes with 1D, 2D and 3D elements and the free version can export meshes with up to 10,000 nodes. More information, manuals and download is available at [GiD Simulation](https://www.gidsimulation.com/gid-for-science/). 
+GiD is a user-friendly pre- and post-processing software developed by the International Center for Numerical Methods in Engineering [(CIMNE)](www.cimne.com) that is easy to use and customize.  The software can handle meshes with 1D, 2D and 3D elements and the free version can export meshes with up to 10,000 nodes. More information, manuals, and download is available at [GiD Simulation](https://www.gidsimulation.com/gid-for-science/). 
 
 #### Download and Installation
 
@@ -12,7 +12,7 @@ If you're having issues installing GiD, please refer to [the official GID instal
 
 ### 1.2. MAT-Fem
 
-Along with GiD, we use the [MAT-Fem](https://www.gidsimulation.com/downloads/educational-finite-element-codes-matfem/) plugin to assign material properties and export the mesh as a Python-ready file. The export is done with a `MAT-Fem.bas` edited file that can be found [in this folder](https://github.com/tiagoburiol/fb.beamSection/tree/main/mesh_files). MAT-Fem is a GiD plugin developed by researchers at [CIMNE](https://cimne.com/) and made to be a Finite Element utility to generate meshes to be used with MATLAB codes.
+MAT-Fem is a GiD plugin developed by researchers at [CIMNE](https://cimne.com/) and made to be a Finite Element utility to generate meshes to be used with MATLAB codes. We use the [MAT-Fem](https://www.gidsimulation.com/downloads/educational-finite-element-codes-matfem/) plugin to assign material properties and export the mesh as a Python-ready file. The export is done with the edited `MAT-Fem.bas` file that can be found [in this folder](https://github.com/tiagoburiol/fb.beamSection/tree/main/mesh_files). 
 
 #### Download and Installation
 
@@ -28,13 +28,13 @@ The .bas file is a template for exporting the mesh in a format suitable for use 
 
 * You can also place the `MAT-fem_Python_Multimat_dens.bas` file from this repository in the Tamplates folder on GiD's installation folder (default: *C:\Program Files\GiD\GiD <version>\templates*) if you wish for it to be more easily accessed inside GiD as one of the options at ***Files > Export > Using template .bas (only mesh)***. 
 
-* Other-wise you'll have to go to t ***Files > Export > Using template .bas (only mesh) >  Others...*** and navigate to where the .bas file is located at every time you wish to export a mesh. 
+* Other-wise you'll have to go to ***Files > Export > Using template .bas (only mesh) >  Others...*** and navigate to where the .bas file is located at *every time* you wish to export a mesh. 
 
 # 2. Steps
 
 ---
 
- After opening GiD, If you have MAT-Fem already installed in the`problem types` folder go to ***Data > Problem Type > MAT-Fem***, or go to __*Data > Problem Type > Load*__  and find where the MAT-Fem.gid file is. A welcome window (**Fig. 1**) wil appear and a new sidebar (**Fig. 2**) will be available. 
+ After opening GiD, if you have MAT-Fem already installed in the`problem types` folder go to ***Data > Problem Type > MAT-Fem***, or go to __*Data > Problem Type > Load*__  and find where the MAT-Fem.gid file is. A welcome window (**Fig. 1**) will appear and a new sidebar (**Fig. 2**) will be available. 
 
 | ![MAT-Fem Welcome](imgs/MAT-Fem_welcome.png) | ![MAT-Fem Sidebar](imgs/MAT-Fem_sidebar.png) |
 | -------------------------------------------- | -------------------------------------------- |
@@ -44,7 +44,7 @@ The .bas file is a template for exporting the mesh in a format suitable for use 
 
 Use the ***create line*** ![create line](imgs/icons/create_line.png) tool to draw straight lines; the ***create arc***  ![create arc](imgs/icons/create_arc.png) for circular arcs and ***create nurbs line*** ![create nurbs line](imgs/icons/create_nurbs_line.png) for curves (splines). More options are also available on the ***Geometry*** tab (**Fig. 3**). GiD also has capabilities to import geometry from CAD editors and various formats on the ***File > Import*** tab (**Fig. 4**). 
 
-> <mark>The geometry HAS to be drawn ONLY on the XY plane on GiD. But the mesh will be exported in the YZ plane and trated as so inside the BeamSection class.</mark>
+> <mark>The geometry ***HAS** to be drawn ONLY on the **XY plane** on GiD. But uppon export the mesh will be transfered to be in the YZ plane and inside the BeamSection class it is trated as such.</mark>
 
 | ![Geometry](imgs/GiD_geometry_tab.png) | ![Import](imgs/GiD_import.png) |
 | -------------------------------------- | ------------------------------ |
