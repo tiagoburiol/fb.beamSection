@@ -20,7 +20,7 @@ To download MAT-Fem visit the [GiD downloads page](https://www.gidsimulation.com
 
 * You can install MAT-Fem by putting the downloaded file on the `problem types` folder on GiD's installation folder (default: *C:\Program Files\GiD\GiD <version>\problemtypes*)
 
-* MAT-Fem, can also be initialized from __*Data > Problem Type > Load*__  tab on GiD. On the *Read Problem Type* window navigate to the folder where `MAT-Fem.gid` is downloaded and click **Open**. 
+* MAT-Fem, can also be initialized from __*Data > Problem Type > Load*__  tab on GiD. On the ***Read Problem Type*** window navigate to the folder where `MAT-Fem.gid` is downloaded and click **Open**. 
 
 #### The .bas File
 
@@ -42,15 +42,17 @@ The .bas file is a template for exporting the mesh in a format suitable for use 
 
 ### Draw Geometry
 
-Now you can draw the geometry for your cross-section as you wish. Use the ***create line*** ![](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/create_line "create line")tool to draw straight lines; the ***create arc***  ![](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/create_arc "create arc")for circular arcs and ***create nurbs line*** ![](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/create_nurbs_line "create nurbs line") for curves (splines). More options are also available on the ***Geometry*** tab (**Fig. 3**). GiD also has capabilities to import geometry from CAD editors and various formats on the ***File > Import*** tab (**Fig. 4**). 
+Use the ***create line*** ![](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/create_line.png "create line")tool to draw straight lines; the ***create arc***  ![](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/create_arc.png "create arc")for circular arcs and ***create nurbs line*** ![](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/create_nurbs_line.png "create nurbs line") for curves (splines). More options are also available on the ***Geometry*** tab (**Fig. 3**). GiD also has capabilities to import geometry from CAD editors and various formats on the ***File > Import*** tab (**Fig. 4**). 
 
-| ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/GiD_geometry_tab.png "Geometry") | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/GiD_import.png "Import") |
-| -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Fig. 3** -  Geometry tab.                                                                                    | **Fig. 4** -  Import options.                                                                          |
+> Draw the geometry only on the XY plane on GiD. But the mesh will be exported in the YZ plane.
+
+| ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/GiD_geometry_tab.png "Geometry") | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/GiD_import.png "Import") |
+| ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Fig. 3** -  Geometry tab.                                                                                   | **Fig. 4** -  Import options.                                                                         |
 
 ### Define Surfaces
 
-It is important that you define *surfaces*  in the geometry so GiD undertands that 2D element meshes should be generated. To define a surface click the ***Create NURBS surface*** tool, select only the parts of the geometry that is closed by clicking and holding the left mouse button (**Fig. 5**) (make sure that the geometry is *closed*, otherwise the surface can't be defined) then press the ***Esc*** keyboard key to confirm your selection. *<mark>Remember that in GiD, to confirm a action you use the **Esc** key! </mark>* After that, if a valid surface is crated, a smaller copy of the geometry will appear in magenta color inside the original drawing (**Fig. 6**). 
+It is important that you define *surfaces*  in the geometry so GiD undertands that 2D element meshes should be generated. To define a surface click the ***Create NURBS surface*** ![](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/create_nurbs_surface.png "Create nurbs surface") tool, select only the parts of the geometry that is closed by clicking and holding the left mouse button (**Fig. 5**) (make sure that the geometry is *closed*, otherwise the surface can't be defined) then press the ***Esc*** keyboard key to confirm your selection. *<mark>Remember that in GiD, to confirm a action you use the **Esc** key! </mark>* After that, if a valid surface is crated, a smaller copy of the geometry will appear in magenta color inside the original drawing (**Fig. 6**). 
 
 | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/GiD_surface_select.png "Selecting geometry with NURBS surface tool") | ![](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/GiD_surface.png "Surface created") |
 | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
