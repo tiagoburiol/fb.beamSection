@@ -1,29 +1,31 @@
-# 🌀 napy.torsion
+# 🌀 fb.beamSection
 
-A Saint-Venant Torsion Module for the NAPy Finite Element Framework
+A Saint-Venant Torsion Module for the FlightBEAM Finite Element Framework
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 ## Overview
 
-This repository contains the **Saint-Venant Torsion Module**, developed for the **NAPy Finite Element Framework**, a Python-based environment for numerical simulation in solid and structural mechanics, which is an ongoing development project.
+This repository contains the **Saint-Venant Torsion Module**, developed for the **FlightBEAM Finite Element Framework**, a Python-based environment for numerical simulation in solid and structural mechanics, which is an ongoing development project.
 
-**NAPy**, short for **Numeric AirPlane**, was originally conceived as a computational platform for the numerical analysis of aerospace structures. Over time, it has evolved into a general-purpose finite element framework designed for research, education, and engineering applications.
+The name **FlightBEAM** is a tribute to Bernoulli, Euler, Saint-Venant, and Santos Dumont. The project was originally conceived as a computational platform for the numerical analysis of aerospace structures. Over time, it has evolved into a general-purpose finite element framework designed for research, education, and engineering applications.
+
+This project has been carried out at the Numerical Analysis Laboratory of the [Federal University of Santa Maria - UFSM](https://www.ufsm.br/), involving graduate students from the [Mechanical Engineering Program - PGMec](https://www.ufsm.br/cursos/pos-graduacao/santa-maria/pgmec) and faculty members from the Departments of Mechanical Engineering and Mathematics.
 
 ## Features
 
 - Implements the **classical Saint-Venant torsion theory**.  
 - Computes **shear stress distribution**, **torsional stiffness**, and **warping functions**.  
 - Fully written in **Python**, using an **object-oriented and modular design**.  
-- Integrates with NAPy’s components for **mesh generation**, **boundary conditions**, and **post-processing**.  
+- Integrates with FlightBEAM’s components for **mesh generation**, **boundary conditions**, and **post-processing**.  
 - Supports **structured and unstructured meshes**.  
 - Ready for extension to **nonlinear torsion**, **coupled problems**, and **aeroelastic analyses**.
 
 ## Implementation Notes
 
 The finite element formulation adopted in this module follows the standard weak form of Saint-Venant’s torsion problem.  
-The resulting linear system is assembled using NAPy’s internal FEM infrastructure, ensuring compatibility with other NAPy modules.
+The resulting linear system is assembled using FlightBEAM’s internal FEM infrastructure, ensuring compatibility with other FlightBEAM modules.
 
 ## Requirements
 
@@ -34,36 +36,39 @@ The resulting linear system is assembled using NAPy’s internal FEM infrastruct
 
 ## Usage
 
-See the [multicell profile example](https://github.com/tiagoburiol/napy.torsion/blob/main/notebooks/multicell_profile_example.ipynb).
+See the [multicell profile example](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/multicell_profile_example.ipynb).
 
-![Distribution of the warping function and Shear stress distribution](https://github.com/tiagoburiol/napy.torsion/blob/main/images/fig1_readme.png?raw=true)
+![Distribution of the warping function and Shear stress distribution](https://github.com/tiagoburiol/fb.beamSection/blob/main/images/fig1_readme.png?raw=true)
 
 Or
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/napy-torsion.git
-cd napy-torsion
+git clone https://github.com/tiagoburiol/fb.beamSection.git
+cd fb.beamSection
 
 
 # Example: open the multicell profile example using jupyter
 jupyter-notebook notebooks/multicell_profile_example.ipynb
 ```
 
+Other examples of usage can be found in [fb.beamSection/examples](https://github.com/tiagoburiol/fb.beamSection/tree/main/examples)
+
+
 ## Verification
 
-The `.inp` files for the ABAQUS 3D exemples from the paper may be found at the [verification_files](https://github.com/tiagoburiol/napy.torsion/blob/main/verification_files) folder in a compacted `.7z` format.
+The `.inp` files for the ABAQUS 3D exemples from the paper may be found at the [verification_files](https://github.com/tiagoburiol/fb.beamSection/blob/main/verification_files) folder in a compacted `.7z` format.
 
 ## Mesh generation
 
-For all examples we used the mesh generation from the [GiD](https://www.gidsimulation.com/) pre-processing software. If you wish to create `.py` files like the ones from our examples you'll also need to install the [MATFem](https://www.gidsimulation.com/downloads/educational-finite-element-codes-matfem/) plugin and download our customized [.bas](https://github.com/tiagoburiol/napy.torsion/blob/main/mesh_files) file. The plugin allows for element material assigment and the `.bas` file exports the mesh as a python dictionary saved in the variable `mesh_data` containing the keys `'materials'`, `'coordinates'` and `'elements'`. 
+For all examples we used the mesh generation from the [GiD](https://www.gidsimulation.com/) pre-processing software. If you wish to create `.py` files like the ones from our examples you'll also need to install the [MATFem](https://www.gidsimulation.com/downloads/educational-finite-element-codes-matfem/) plugin and download our customized [.bas](https://github.com/tiagoburiol/fb.beamSection/blob/main/mesh_files) file. The plugin allows for element material assigment and the `.bas` file exports the mesh as a python dictionary saved in the variable `mesh_data` containing the keys `'materials'`, `'coordinates'` and `'elements'`. 
 
 ## Citation
 
 If you use this module in your research, please cite it as:
 
-> Pedro F. M. Pires, Pedro F. M., Buriol, Tiago M. e Santos, Tiago dos (2025). *Saint-Venant Torsion Module for the NAPy Finite Element Framework*. GitHub repository.  
-> [https://github.com/yourusername/napy-torsion](https://github.com/yourusername/napy-torsion)
+> Pedro F. M. Pires, Pedro F. M., Buriol, Tiago M. e Santos, Tiago dos (2025). *Saint-Venant Torsion Module for the FlightBEAM Finite Element Framework*. GitHub repository.  
+> [https://github.com/tiagoburiol/fb.beamSection](https://github.com/tiagoburiol/fb.beamSection)
 
 ## License
 
