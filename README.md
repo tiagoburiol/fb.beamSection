@@ -11,7 +11,7 @@ This repository contains the **Saint-Venant Torsion Module**, developed for the 
 
 The name **FlightBEAM** is a tribute to Bernoulli, Euler, Saint-Venant, and Santos Dumont. The project was originally conceived as a computational platform for the numerical analysis of aerospace structures. Over time, it has evolved into a general-purpose finite element framework designed for research, education, and engineering applications.
 
-This project has been carried out at the Numerical Analysis Laboratory of the [Federal University of Santa Maria - UFSM](https://www.ufsm.br/), involving graduate students from the [Mechanical Engineering Program - PGMec](https://www.ufsm.br/cursos/pos-graduacao/santa-maria/pgmec) and faculty members from the Departments of Mechanical Engineering and Mathematics.
+This project has been carried out at the Numerical Analysis Laboratory (LANum) of the [Federal University of Santa Maria - UFSM](https://www.ufsm.br/), involving graduate students from the [Mechanical Engineering Program - PGMec](https://www.ufsm.br/cursos/pos-graduacao/santa-maria/pgmec) and faculty members from the Departments of Mechanical Engineering and Mathematics.
 
 ## Features
 
