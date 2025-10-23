@@ -182,7 +182,7 @@ Figs. 17 to 28 show the steps to generate a structured mesh with 4 elements acro
 | ![bdfgdf](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/example/GiD_struct_mesh_divisions.png)       | ![asdafasf](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/example/GiD_struct_mesh_divisions_lines_1.png) |
 | **Fig. 23** -  .                                                                                                              | **Fig. 24** -  .                                                                                                                  |
 | ![kjhgf](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/example/GiD_struct_mesh_surface_select_2.png) | ![tyutyu](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/example/GiD_struct_mesh_divisions_lines_2.png)   |
-| **Fig. 25** -  .                                                                                  | **Fig. 26** -  .                                                                                                                  |
+| **Fig. 25** -  .                                                                                                              | **Fig. 26** -  .                                                                                                                  |
 | ![iouytr](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/example/GiD_export_mesh_bas.png)             | ![uytrfsfd](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/imgs/example/GiD_export_mesh_name.png)              |
 | **Fig. 27** -  .                                                                                                              | **Fig. 28** -  .                                                                                                                  |
 
@@ -196,7 +196,7 @@ Figs. 17 to 28 show the steps to generate a structured mesh with 4 elements acro
 
 * The free version of GiD allows only a limited number of surfaces to be saved on a file, but you can still export the mesh and later delete a few surfaces to be able to save the project.
 
-* At any point you can delete geometry by clicking the **Delete** button an then delecting the type of geometry to delete.
+* At any point you can delete geometry by clicking the **Delete** ![Delete](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/delete.png) button an then delecting the type of geometry to delete.
 
 * After generanting the mesh, you may swich between mesh and geometry views using the **toggle geometry/mesh view** ![Toggle geometry/mesh](https://github.com/tiagoburiol/fb.beamSection/tree/main/notebooks/imgs/icons/toggle_geometry_mesh.png) button.
 
