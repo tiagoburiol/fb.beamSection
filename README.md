@@ -38,7 +38,7 @@ The resulting linear system is assembled using FlightBEAM’s internal FEM infra
 
 See the [multicell profile example](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/multicell_profile_example.ipynb).
 
-![Distribution of the warping function and Shear stress distribution](https://github.com/tiagoburiol/fb.beamSection/blob/main/images/fig1_readme.png?raw=true)
+![Distribution of the warping function and Shear stress distribution](https://raw.githubusercontent.com/tiagoburiol/fb.beamSection/refs/heads/main/images/fig1_readme.png)
 
 Or
 
