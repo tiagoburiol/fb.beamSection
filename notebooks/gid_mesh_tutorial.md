@@ -1,3 +1,17 @@
+# Summary
+
+This document presents a short introduction and tutorial to 2D mesh generation in GiD using the MAT-Fem plug-in for material assignment and mesh exporting. 
+
+* Section 1 introduces and provides download links to the software and plugin used;
+
+* Section 2 details the relevant procedures for 2D mesh generation;
+
+* Section 3 provides a short step-by-step example to generate a structured mesh;
+
+* Section 4 compiles a few tips and tricks to use with GiD.  
+
+
+
 # 1 Mesh generation with GiD and MAT-Fem
 
 ---
@@ -192,7 +206,7 @@ Figs. 17 to 28 show the steps to generate a structured mesh with 4 elements acro
 
 
 
-# Useful Tips for Geometry Editing
+# 4. Useful Tips for Geometry Editing
 
 ---
 
