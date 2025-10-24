@@ -43,6 +43,8 @@ class BeamSection(Mesh, SectionElem):
         List of mass densities for the elements.
     intDegree: int, optional 
         Degree for quadrature integration, default = 4.
+    noSimulation: bool, optional 
+       Flag to not run the simulation, default = False.
     displayTimes: bool, optional 
         Print assembly, solving and integration times at the end, default = True.
     '''
@@ -54,6 +56,7 @@ class BeamSection(Mesh, SectionElem):
                  nu:            list[list[int]]|float = None,
                  rho:           list[list[int]]|float = None,
                  intDegree:     int                   = 4,
+                 noSimulation: bool                   = False,
                  displayTimes:  bool                  = True,
                  ):
 
@@ -108,32 +111,13 @@ class BeamSection(Mesh, SectionElem):
         else:
             raise Exception('Element type not implemented: {sel}')
 
-        # Determine area properties
-        tic = time.perf_counter()    
-        self.__calcAreaProperties()
-        toc = time.perf_counter()    
-        self.times.append(f'Area properties integration time:    {toc-tic:.3f} seconds')     
-
-        # Assemble global stiffness
-        tic = time.perf_counter()    
-        self.__globalStiffness(degree=self.intDegree)
-        toc = time.perf_counter()    
-        self.times.append(f'Global stiffness assembly time:      {toc-tic:.3f} seconds')
+        # Simulate if noSimulation flag is off
+        if noSimulation:
+            return
+        else:
+            self.simulate(displayTimes=displayTimes)
         
-        
-        # Node where phi* = 0
-        prescribedDof = np.array([0])
-        self.__boundaryConditions(prescribedDof)
 
-        # Warping solution
-        self.__solveWarping(degree=self.intDegree)
-
-        # Determine inertia properties
-        self.__calcInertiaProperties()
-        
-        # Display times
-        if displayTimes:
-            [print(t) for t in self.times]
     
         
     ## --------------------- Getters --------------------- ##
@@ -1107,7 +1091,7 @@ class BeamSection(Mesh, SectionElem):
         return fig, ax
     
     ## PLOT CROSS-SECTION GEOMETRY
-    def plotSec(self, fillColor:str='#59c1f9', figsize:tuple=None, fontsize=12) -> tuple[plt.Figure, plt.Axes]:
+    def plotSec(self, showElemLabel=False, showNodeLabel=False, fillColor:str='#59c1f9', figsize:tuple=None, fontsize=12) -> tuple[plt.Figure, plt.Axes]:
         '''
         Plots the cross-section geometry.
 
@@ -1115,8 +1099,11 @@ class BeamSection(Mesh, SectionElem):
         ----------
         fillColor : str, optional
             The color to fill the element polygons. The default is '#59c1f9'.
+        showElemLabel : bool, optional
+            Show element labels, default False
+        showNodeLabel : bool, optional
+            Show node labels, default False
         '''
-
         fig, ax      = plt.subplots(figsize=figsize)
         
         # Coodinates of main vertices
@@ -1124,10 +1111,38 @@ class BeamSection(Mesh, SectionElem):
             end = 4
         elif self.elemType == 'Tri':
             end = 3        
-            
-        for elem in self._elements:
+                   
+        # Colors
+        colors = [fillColor, '#FFA55C', '#BDFA96', '#FADD8E', '#EA8EFA',
+                  '#A3E9FA', '#FAA2C1', '#FAF2A2', '#879FA5', '#7A7750']
+        
+        # Track material change to update fill color
+        uniqueMaterials = np.array([])
+        newMaterial = False
+        # colorIndex = -1
+        
+        # Loop through elements
+        for e,elem in enumerate(self._elements):
             # Node coordinates
             nodesCoords = elem.getNodeCoords()
+            
+            # Read element material 
+            material = self.G[e] 
+                            
+            # Check if material is new and update color index if it is
+            newMaterial = False
+            if material not in uniqueMaterials:
+                uniqueMaterials = np.append(uniqueMaterials, material)
+                newMaterial = True
+                # colorIndex = int(colorIndex +1)
+             
+            # Get material color index
+            try:
+                colorIndex = int(np.where(uniqueMaterials==material)[0])
+            except IndexError:
+                # If there are more than 10 materials, set new ones to the first color
+                colorIndex = 0
+            # print(f'{colorIndex = }, {material = }')
             
             # Get node number in anti-clockwise order
             match len(nodesCoords):
@@ -1149,12 +1164,26 @@ class BeamSection(Mesh, SectionElem):
             verts = np.vstack([Ys,Zs]).T
 
             # Vertices
-            poly        = Polygon(verts,fc=fillColor,alpha=.2,ec='k',zorder=0)
+            if newMaterial:
+                # Create a new label for the legend for every new material
+                poly        = Polygon(verts,fc=colors[colorIndex],alpha=.2,ec='k',zorder=0, label=f'$\mu$ = {material:.2e}')
+            else:
+                poly        = Polygon(verts,fc=colors[colorIndex],alpha=.2,ec='k',zorder=0)
             ax.add_patch(poly)
             
-            # Show element number at the last node
-            lastNode = np.array(nodesCoords)[-1]
-            ax.text(lastNode[1],lastNode[2], elem.getIndex(), fontsize=fontsize)
+            # Show element number at the centroid of the first 3 node coordinates
+            if showElemLabel:
+                coordsTriangle = np.array(nodesCoords)[:3]
+                triCentroid = 0, np.sum(coordsTriangle[:,1])/3, np.sum(coordsTriangle[:,2])/3 
+                ax.text(triCentroid[1],triCentroid[2], elem.getIndex(), 
+                        fontsize=fontsize-2,ha='center',va='center')
+            
+            # Show node numbers
+            if showNodeLabel:
+                nodesIndices = elem.getNodeIndices()
+                for k,coord in enumerate(nodesCoords):
+                    ax.text(coord[1],coord[2], nodesIndices[k], 
+                            fontsize=fontsize-4, c='m', ha='left',va='top')
         
         # # Get valid nodes coordinates
         # vn = self._validNodes
@@ -1168,6 +1197,7 @@ class BeamSection(Mesh, SectionElem):
         ax.set_title(f'Cross Section',fontsize=14,fontweight='bold')
         ax.set_xlim([np.min(Ys),np.max(Ys)])
         ax.set_ylim([np.min(Zs),np.max(Zs)])
+        ax.legend(title='Material')
         # plt.tight_layout()
         return fig, ax
     
@@ -1505,4 +1535,37 @@ class BeamSection(Mesh, SectionElem):
         
         # Console message
         print(f'File Saved: {res_file}\n')
+   
+    ## START CROSS-SECTION CALCULATIONS
+    def simulate(self, displayTimes=True):
+        '''Start simulation: calculate area properties, solve warping, solve shear center'''
+        ## ------------------------------------------------------------ ##
+        ##                       SIMULATION START                       ##
+        ## ------------------------------------------------------------ ##
+        # Determine area properties
+        tic = time.perf_counter()    
+        self.__calcAreaProperties()
+        toc = time.perf_counter()    
+        self.times.append(f'Area properties integration time:    {toc-tic:.3f} seconds')     
+
+        # Assemble global stiffness
+        tic = time.perf_counter()    
+        self.__globalStiffness(degree=self.intDegree)
+        toc = time.perf_counter()    
+        self.times.append(f'Global stiffness assembly time:      {toc-tic:.3f} seconds')
+        
+        
+        # Node where phi* = 0
+        prescribedDof = np.array([0])
+        self.__boundaryConditions(prescribedDof)
+
+        # Warping solution
+        self.__solveWarping(degree=self.intDegree)
+
+        # Determine inertia properties
+        self.__calcInertiaProperties()
+        
+        # Display times
+        if displayTimes:
+            [print(t) for t in self.times]
    
