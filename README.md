@@ -1,15 +1,15 @@
 # 🌀 fb.beamSection
 
-A Saint-Venant Torsion Module for the FlightBEAM Finite Element Framework
+A Saint-Venant Torsion Module for the FlightBEND Finite Element Framework
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 ## Overview
 
-This repository contains the **Saint-Venant Torsion Module**, developed for the **FlightBEAM Finite Element Framework**, a Python-based environment for numerical simulation in solid and structural mechanics, which is an ongoing development project.
+This repository contains the **Saint-Venant Torsion Module**, developed for the **FlightBEND Finite Element Framework**, a Python-based environment for numerical simulation in solid and structural mechanics, which is an ongoing development project.
 
-The name **FlightBEAM** is a tribute to Bernoulli, Euler, Saint-Venant, and Santos Dumont. The project was originally conceived as a computational platform for the numerical analysis of aerospace structures. Over time, it has evolved into a general-purpose finite element framework designed for research, education, and engineering applications.
+The name **FlightBEND** is a tribute to Bernoulli, Euler, Saint-Venant, and Santos Dumont. The project was originally conceived as a computational platform for the numerical analysis of aerospace structures. Over time, it has evolved into a general-purpose finite element framework designed for research, education, and engineering applications.
 
 This project has been carried out at the Numerical Analysis Laboratory (LANum) of the [Federal University of Santa Maria - UFSM](https://www.ufsm.br/), involving graduate students from the [Mechanical Engineering Program - PGMec](https://www.ufsm.br/cursos/pos-graduacao/santa-maria/pgmec) and faculty members from the Departments of Mechanical Engineering and Mathematics.
 
@@ -18,14 +18,14 @@ This project has been carried out at the Numerical Analysis Laboratory (LANum) o
 - Implements the **classical Saint-Venant torsion theory**.  
 - Computes **shear stress distribution**, **torsional stiffness**, and **warping functions**.  
 - Fully written in **Python**, using an **object-oriented and modular design**.  
-- Integrates with FlightBEAM’s components for **mesh generation**, **boundary conditions**, and **post-processing**.  
+- Integrates with FlightBEND’s components for **mesh generation**, **boundary conditions**, and **post-processing**.  
 - Supports **structured and unstructured meshes**.  
 - Ready for extension to **nonlinear torsion**, **coupled problems**, and **aeroelastic analyses**.
 
 ## Implementation Notes
 
 The finite element formulation adopted in this module follows the standard weak form of Saint-Venant’s torsion problem.  
-The resulting linear system is assembled using FlightBEAM’s internal FEM infrastructure, ensuring compatibility with other FlightBEAM modules.
+The resulting linear system is assembled using FlightBEND’s internal FEM infrastructure, ensuring compatibility with other FlightBEND modules.
 
 ## Requirements
 
@@ -68,7 +68,7 @@ For all examples we used the mesh generation from the [GiD](https://www.gidsimul
 
 If you use this module in your research, please cite it as:
 
-> Pedro F. M. Pires, Pedro F. M., Buriol, Tiago M. e Santos, Tiago dos (2025). *Saint-Venant Torsion Module for the FlightBEAM Finite Element Framework*. GitHub repository.  
+> Pedro F. M. Pires, Pedro F. M., Buriol, Tiago M. e Santos, Tiago dos (2025). *Saint-Venant Torsion Module for the FlightBEND Finite Element Framework*. GitHub repository.  
 > [https://github.com/tiagoburiol/fb.beamSection](https://github.com/tiagoburiol/fb.beamSection)
 
 ## License
