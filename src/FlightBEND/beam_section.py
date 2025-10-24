@@ -43,6 +43,8 @@ class BeamSection(Mesh, SectionElem):
         List of mass densities for the elements.
     intDegree: int, optional 
         Degree for quadrature integration, default = 4.
+    noSimulation: bool, optional 
+       Flag to not run the simulation, default = False.
     displayTimes: bool, optional 
         Print assembly, solving and integration times at the end, default = True.
     '''
@@ -54,6 +56,7 @@ class BeamSection(Mesh, SectionElem):
                  nu:            list[list[int]]|float = None,
                  rho:           list[list[int]]|float = None,
                  intDegree:     int                   = 4,
+                 noSimulation: bool                   = False,
                  displayTimes:  bool                  = True,
                  ):
 
@@ -108,32 +111,12 @@ class BeamSection(Mesh, SectionElem):
         else:
             raise Exception('Element type not implemented: {sel}')
 
-        # Determine area properties
-        tic = time.perf_counter()    
-        self.__calcAreaProperties()
-        toc = time.perf_counter()    
-        self.times.append(f'Area properties integration time:    {toc-tic:.3f} seconds')     
-
-        # Assemble global stiffness
-        tic = time.perf_counter()    
-        self.__globalStiffness(degree=self.intDegree)
-        toc = time.perf_counter()    
-        self.times.append(f'Global stiffness assembly time:      {toc-tic:.3f} seconds')
+        if noSimulation:
+            return
+        else:
+            self.simulate(displayTimes=displayTimes)
         
-        
-        # Node where phi* = 0
-        prescribedDof = np.array([0])
-        self.__boundaryConditions(prescribedDof)
 
-        # Warping solution
-        self.__solveWarping(degree=self.intDegree)
-
-        # Determine inertia properties
-        self.__calcInertiaProperties()
-        
-        # Display times
-        if displayTimes:
-            [print(t) for t in self.times]
     
         
     ## --------------------- Getters --------------------- ##
@@ -1107,7 +1090,7 @@ class BeamSection(Mesh, SectionElem):
         return fig, ax
     
     ## PLOT CROSS-SECTION GEOMETRY
-    def plotSec(self, fillColor:str='#59c1f9', figsize:tuple=None, fontsize=12) -> tuple[plt.Figure, plt.Axes]:
+    def plotSec(self, showElemLabel=False, showNodeLabel=False, fillColor:str='#59c1f9', figsize:tuple=None, fontsize=12) -> tuple[plt.Figure, plt.Axes]:
         '''
         Plots the cross-section geometry.
 
@@ -1115,6 +1098,10 @@ class BeamSection(Mesh, SectionElem):
         ----------
         fillColor : str, optional
             The color to fill the element polygons. The default is '#59c1f9'.
+        showElemLabel : bool, optional
+            Show element labels, default False
+        showNodeLabel : bool, optional
+            Show node labels, default False
         '''
 
         fig, ax      = plt.subplots(figsize=figsize)
@@ -1153,8 +1140,14 @@ class BeamSection(Mesh, SectionElem):
             ax.add_patch(poly)
             
             # Show element number at the last node
-            lastNode = np.array(nodesCoords)[-1]
-            ax.text(lastNode[1],lastNode[2], elem.getIndex(), fontsize=fontsize)
+            if showElemLabel:
+                lastNode = np.array(nodesCoords)[-1]
+                ax.text(lastNode[1],lastNode[2], elem.getIndex(), fontsize=fontsize)
+            # Show node numbers
+            if showNodeLabel:
+                nodesIndices = elem.getNodeIndices()
+                for k,coord in enumerate(nodesCoords):
+                    ax.text(coord[1],coord[2], nodesIndices[k], fontsize=fontsize-4, c='m')
         
         # # Get valid nodes coordinates
         # vn = self._validNodes
@@ -1505,4 +1498,37 @@ class BeamSection(Mesh, SectionElem):
         
         # Console message
         print(f'File Saved: {res_file}\n')
+   
+   
+    def simulate(self, displayTimes=True):
+        '''Start simulation: calculate area properties, solve warping, solve shear center'''
+        ## ------------------------------------------------------------ ##
+        ##                       SIMULATION START                       ##
+        ## ------------------------------------------------------------ ##
+        # Determine area properties
+        tic = time.perf_counter()    
+        self.__calcAreaProperties()
+        toc = time.perf_counter()    
+        self.times.append(f'Area properties integration time:    {toc-tic:.3f} seconds')     
+
+        # Assemble global stiffness
+        tic = time.perf_counter()    
+        self.__globalStiffness(degree=self.intDegree)
+        toc = time.perf_counter()    
+        self.times.append(f'Global stiffness assembly time:      {toc-tic:.3f} seconds')
+        
+        
+        # Node where phi* = 0
+        prescribedDof = np.array([0])
+        self.__boundaryConditions(prescribedDof)
+
+        # Warping solution
+        self.__solveWarping(degree=self.intDegree)
+
+        # Determine inertia properties
+        self.__calcInertiaProperties()
+        
+        # Display times
+        if displayTimes:
+            [print(t) for t in self.times]
    
