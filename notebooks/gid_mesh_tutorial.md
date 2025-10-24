@@ -80,7 +80,9 @@ The most convenient way to assign material to geometry is before mesh creation, 
 
 > Note: the `thickness` property is not used in our program, so it can be left as-is. 
 
-After filling the properties boxes, click the ***Assign*** button then the ***Surfaces*** option (**Fig. 7**). Now you can select multiple surfaces to assign the current properties to. After selection (**Fig. 8**) press the ***Esc*** key to confirm. On the materials window you can alse use the ***Draw*** button to show the assignment of specific materials or all materials (**Figs. 9** and **10**) to verify if the material assignment step was done correctly.
+After filling the properties boxes, click the ***Assign*** button then the ***Surfaces*** option (**Fig. 7**); A warning window will appear, then click **Yes** so that the edited values overwrite the old ones. Now you can select multiple surfaces to assign the current properties to. After selection (**Fig. 8**) press the ***Esc*** key to confirm. On the materials window you can alse use the ***Draw*** button to show the assignment of specific materials or all materials (**Figs. 9** and **10**) to verify if the material assignment step was done correctly.
+
+* **Important:** <mark><u>To assign multiple materials</u></mark> you have to enter the properties and click the **New material** ![new_material](imgs/icons/new_material.png) button (so a new material is created), then give it a new name and click **Yes** on the *Data has changed [...]* message window that appears next. Otherwise the properties will not be correctly applied. Every defined material for the current project will be available in the dropdown menu (the box where `Steel (N,mm,rad)` is written on **Fig. 7**). You can save new global material definitions by editing the `MAT-Fem.mat`  file inside the MAT-Fem folder.
 
 | ![Materials window](imgs/MAT-Fem_material_window.png)             | ![Surface selected for material assignment](imgs/MAT-Fem_material_window_surface_select.png) |
 | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
@@ -212,7 +214,7 @@ Figs. 17 to 28 show the steps to generate a structured mesh with 4 elements acro
 
 * GiD is a buggy program. Be sure to save your project often as you edit.
 
-* `Ctrl + Z` can be quite unrealiable to undo steps, use it with care, since it can crash or 'softlock' the program in many cases.
+* `Ctrl + Z` can be quite unrealiable to undo steps, use it with care, since it can crash or 'softlock' the program in some cases.
 
 * The free version of GiD allows only a limited number of surfaces to be saved on a file, but you can still export the mesh and later delete a few surfaces to be able to save the project.
 
