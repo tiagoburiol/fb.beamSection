@@ -2,8 +2,9 @@
 
 A Saint-Venant Torsion Module for the FlightBEND Finite Element Framework
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![PyPI version](https://badge.fury.io/py/FlightBEND.svg)](https://pypi.org/project/FlightBEND/1.0.0/) 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17460543.svg)](https://doi.org/10.5281/zenodo.17460543) 
+
 
 ## Overview
 
