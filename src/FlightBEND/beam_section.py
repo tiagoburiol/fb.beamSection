@@ -272,7 +272,7 @@ class BeamSection(Mesh, SectionElem):
         
         # Initializing torsional constant
         J_phi           = 0
-        J_phi_weighted_G = 0
+        J_phi_w_G = 0
         for e,elem in enumerate(self._elements):
 
             # Degrees of freedom for the element
@@ -314,7 +314,7 @@ class BeamSection(Mesh, SectionElem):
                     FF = Fy@Fy + Fz@Fz + Fy@Bz@phi - Fz@By@phi
 
                     J_phi += weights[i]*J*FF
-                    J_phi_weighted_G += weights[i]*J*FF * G/G0
+                    J_phi_w_G += weights[i]*J*FF * G/G0
                     
 
             elif elemType == 'Quad':
@@ -335,12 +335,12 @@ class BeamSection(Mesh, SectionElem):
                         FF = Fy@Fy + Fz@Fz + Fy@Bz@phi - Fz@By@phi
 
                         J_phi += weights[i]*weights[j]*J*FF
-                        J_phi_weighted_G += weights[i]*weights[j]*J*FF * G/G0
+                        J_phi_w_G += weights[i]*weights[j]*J*FF * G/G0
             else:
                 raise Exception('Element type not recognized')
                 
         self.areaProperties.update(J_phi= float(J_phi),
-                                   J_phi_weighted_G = float(J_phi_weighted_G))
+                                   J_phi_w_G = float(J_phi_w_G))
 
         return
     ## AREA PROPERTIES
@@ -517,7 +517,7 @@ class BeamSection(Mesh, SectionElem):
         phi_y_rho       , phi_z_rho                 = 0,0       #  ρ*φ*y dA,   ρ*φ*z dA
         phi_yy_rho      , phi_yz_rho, phi_zz_rho    = 0,0,0     # ρ*φ*y^2 dA, ρ*φ*z^2 dA, ρ*φ*y*z dA
         
-        Qy_cent_weighted, Qz_cent_weighted, Iyz_cent_weighted = 0,0,0 # E/E0*y dA,  E/E0*y dA, E/E0*y*z dA
+        Qy_cent_w, Qz_cent_w, Iyz_cent_weighted = 0,0,0 # E/E0*y dA,  E/E0*y dA, E/E0*y*z dA
         
         # Getting the centroid position
         Y_CG = self.areaProperties['Y_CG_w']
@@ -594,8 +594,8 @@ class BeamSection(Mesh, SectionElem):
                     phi_yz_rho      += WJ*Fty@Ftz@Fphi * rho        # ρ*φ*y*z dA
                     
                     ## UPDATE STATIC MOMENTS (AT WEIGHTED CENTROID)
-                    Qy_cent_weighted    += WJ*Fy        * E_weight  #   E/E0*y dA
-                    Qz_cent_weighted    += WJ*Fz        * E_weight  #   E/E0*z dA
+                    Qy_cent_w    += WJ*Fy        * E_weight  #   E/E0*y dA
+                    Qz_cent_w    += WJ*Fz        * E_weight  #   E/E0*z dA
                     Iyz_cent_weighted   += WJ*Fy@Fz     * E_weight  #     y*z dA
 
             elif elemType == 'Quad':
@@ -635,8 +635,8 @@ class BeamSection(Mesh, SectionElem):
                         phi_yz_rho      += WJ*Fty@Ftz@Fphi * rho        # ρ*φ*y*z dA
                         
                         ## UPDATE STATIC MOMENTS (AT WEIGHTED CENTROID)
-                        Qy_cent_weighted    += WJ*Fy        * E_weight  #    E/E0*y dA
-                        Qz_cent_weighted    += WJ*Fz        * E_weight  #    E/E0*z dA
+                        Qy_cent_w    += WJ*Fy        * E_weight  #    E/E0*y dA
+                        Qz_cent_w    += WJ*Fz        * E_weight  #    E/E0*z dA
                         Iyz_cent_weighted   += WJ*Fy@Fz     * E_weight  #  E/E0*y*z dA
                         
                         
@@ -658,8 +658,8 @@ class BeamSection(Mesh, SectionElem):
                                      )
         # UPDATING AREA PROPERTIES
         self.areaProperties.update(
-                                         Qy_cent_weighted = float(Qy_cent_weighted),
-                                         Qz_cent_weighted = float(Qz_cent_weighted)
+                                         Qy_cent_w = float(Qy_cent_w),
+                                         Qz_cent_w = float(Qz_cent_w)
         )
         return
     ## PROCESSING 
@@ -1182,11 +1182,11 @@ class BeamSection(Mesh, SectionElem):
                 case _:
                     raise Exception('Invalid number of nodes')
             
-            Ys = np.array(nodesCoords)[connect,1]
-            Zs = np.array(nodesCoords)[connect,2]
+            vertYs = np.array(nodesCoords)[connect,1]
+            vertZs = np.array(nodesCoords)[connect,2]
             
             
-            verts = np.vstack([Ys,Zs]).T
+            verts = np.vstack([vertYs,vertZs]).T
 
             # Vertices
             if newMaterial:
@@ -1248,11 +1248,11 @@ class BeamSection(Mesh, SectionElem):
                             N = elem.getShapeFun(coords)
                             
                             # Z coordinate _______________________________
-                            z_gp    = N@Zs
+                            z_gp    = N@zs
                             Z_gauss = np.append(Z_gauss, z_gp)
 
                             # Y coordinate _______________________________
-                            y_gp    = N@Ys
+                            y_gp    = N@ys
                             Y_gauss = np.append(Y_gauss, y_gp)
 
         
@@ -1409,12 +1409,12 @@ class BeamSection(Mesh, SectionElem):
                 
                 
                 # Creating a triangulation connectivity for gauss points, suitable for use in tricontouf
-                nPoints = Y_gauss.shape[0]*Y_gauss.shape[1]
-                gauss_connec = np.arange(nPoints).reshape(Y_gauss.shape)
+                nPoints = Y_gauss.shape[0]*Y_gauss.shape[1]                 # Total of gauss points
+                gauss_connec = np.arange(nPoints).reshape(Y_gauss.shape)    # Connectivity for gausspoints
                 
                 # Triangulation for quads is straightforward
                 #
-                # (k + Ngp*m)  ---------- (k + Ngp*m + 1) 
+                # (k + Ngp)  --------------- (k + Ngp + 1) 
                 #    |                       .     |
                 #    |      t2          .          |
                 #    |             .               |
@@ -1422,29 +1422,34 @@ class BeamSection(Mesh, SectionElem):
                 #    |   .                         |
                 #   (k) ------------------------ (k+1) 
                 # k = n + Ngp*m
-                # t1 = (k, k+1, k+Ngp*m)
-                # t2 = (k, (k+1+Ngp*m, k+Ngp*m)
+                # t1 = (k, k+1, k+Ngp+1)
+                # t2 = (k, (k+Ngp+1, k+Ngp)
                 if self.elemType == 'Quad':
-                    Ngp = Y_gauss.shape[1]
-                    connect = np.array([])
-                    for n,m in product(range(Ngp),range(Ngp)):
+                    # Number of gauss points per axis
+                    Ngp = int(np.sqrt(Y_gauss.shape[1]))
+                    # Initialization of the connectivy for the triangles
+                    connectTrian = np.array([0,0,0])
+                    for m,n in product(range(Ngp-1),range(Ngp-1)):
                         k = n + Ngp*m
-                        t1 = gauss_connec[:,[k,k+1,k+Ngp*m]]
-                        t2 = gauss_connec[:,[k,k+Ngp*m+1,k+Ngp*m]]
-                        np.vstack([connect, t1, t2])
+                        t1 = gauss_connec[:,[k, k+1     ,k+Ngp+1]]
+                        t2 = gauss_connec[:,[k, k+Ngp+1 ,k+Ngp]]
+                        connectTrian = np.vstack([connectTrian, t1, t2])
+                    # Delete first row
+                    connectTrian = np.delete(connectTrian,0,axis=0)
+                    
                 else: 
                     # Triangulation for tris is complicated, has to be dealt in case by case
                     # because of gauss point enumeration
                     match Y_gauss.shape[1]:
                         case 3:
                             t0 = gauss_connec[:,[0,1,2]]
-                            connect = t0
+                            connectTrian = t0
                         case 6:
                             t0 = gauss_connec[:,[4,0,2]]
                             t1 = gauss_connec[:,[0,5,2]]
                             t2 = gauss_connec[:,[5,1,2]]
                             t3 = gauss_connec[:,[1,3,2]]
-                            connect = np.vstack([t0,t1,t2,t3])
+                            connectTrian = np.vstack([t0,t1,t2,t3])
                         case 7:
                             t0 = gauss_connec[:,[2,4,0]]
                             t1 = gauss_connec[:,[4,3,0]]
@@ -1452,13 +1457,13 @@ class BeamSection(Mesh, SectionElem):
                             t3 = gauss_connec[:,[5,1,0]]
                             t4 = gauss_connec[:,[1,6,0]]
                             t5 = gauss_connec[:,[6,2,0]]
-                            connect = np.vstack([t0,t1,t2,t3,t4,t5])
+                            connectTrian = np.vstack([t0,t1,t2,t3,t4,t5])
                             
                         case _:
                             raise NotImplementedError(f'Triagulation not implemented for degree {degree} quadrature points.')
 
                 # Create triangulation for tricontour plot
-                triang  = tri.Triangulation(Y_gauss.reshape(-1),Z_gauss.reshape(-1),connect)
+                triang  = tri.Triangulation(Y_gauss.reshape(-1),Z_gauss.reshape(-1),connectTrian)
 
 
                 ## ------------------------ Tau_xy ------------------------ ##
