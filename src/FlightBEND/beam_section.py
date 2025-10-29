@@ -351,34 +351,25 @@ class BeamSection(Mesh, SectionElem):
 
         points, weights = self._elements[0].getQuadrature(2)
         A, Qy, Qz, Iyy, Izz, Iyz = 0,0,0,0,0,0
-        A_weighted, Qy_weighted , Qz_weighted , Izz_weighted, Iyy_weighted, Iyz_weighted = 0,0,0,0,0,0
-        A_weightedG, Qy_weightedG , Qz_weightedG , Izz_weightedG, Iyy_weightedG, Iyz_weightedG = 0,0,0,0,0,0
+        A_w, Qy_w , Qz_w , Izz_w, Iyy_w, Iyz_w = 0,0,0,0,0,0
+        A_wG, Qy_wG , Qz_wG , Izz_wG, Iyy_wG, Iyz_wG = 0,0,0,0,0,0
 
         # Reference moduli
-        E0 = self.E[0] # np.min(self.E)
-        G0 = self.G[0] # np.min(G)
+        E0 = self.E[0]
+        G0 = self.G[0]
 
         # Reads element type
-        elemType = self._elements[0].elemType
-        
-        # # Get valid nodes coordinates
-        # vn = self._validNodes
-        # Ys = self._nodeCoords[vn,1]
-        # Zs = self._nodeCoords[vn,2]
+        elemType = self._elements[0].elemType        
 
         # for e in range(self.totalElements):
         for e,elem in enumerate(self._elements):
 
             # Degrees of freedom for the element
             elementDof = self.getElemDof(elem)
-            # elementDof = np.array(self._elementsNodes)[e, :]
-            # print(f'elementDof = {elementDof}')
 
             # Finding the node coordinates
-            ys = self._nodeCoords[elementDof,1]; #print(ys)
+            ys = self._nodeCoords[elementDof,1]; 
             zs = self._nodeCoords[elementDof,2]
-
-
 
             # Quadrature for the element; Iterates through Gaussian points
             if elemType == 'Tri':
@@ -408,6 +399,26 @@ class BeamSection(Mesh, SectionElem):
 
                     # PRODUCT OF INERTIA _________________
                     Iyz += weights[i]*J*(Fy@Fz)
+                    
+                    # WEIGHTED PROPERTIES ____________                    
+                    E_weight = self.E[e] / E0
+                    G_weight = self.G[e] / G0
+                    
+                    ## WEIGHTING (BY E)
+                    A_w      += weights[i]*J*F        * E_weight
+                    Qy_w     += weights[i]*J*Fy       * E_weight
+                    Qz_w     += weights[i]*J*Fz       * E_weight
+                    Iyy_w    += weights[i]*J*(Fy@Fy)  * E_weight
+                    Izz_w    += weights[i]*J*(Fz@Fz)  * E_weight
+                    Iyz_w    += weights[i]*J*(Fy@Fz)  * E_weight
+
+                    ## WEIGHTING (BY G)
+                    A_wG     += weights[i]*J*F        * G_weight
+                    Qy_wG    += weights[i]*J*Fy       * G_weight
+                    Qz_wG    += weights[i]*J*Fz       * G_weight
+                    Iyy_wG   += weights[i]*J*(Fy@Fy)  * G_weight
+                    Izz_wG   += weights[i]*J*(Fz@Fz)  * G_weight
+                    Iyz_wG   += weights[i]*J*(Fy@Fz)  * G_weight
 
             elif elemType == 'Quad':
                 for j, coord_j in enumerate(points):
@@ -445,52 +456,52 @@ class BeamSection(Mesh, SectionElem):
                         G_weight = self.G[e] / G0
 
                         ## WEIGHTING (BY E)
-                        A_weighted      += weights[i]*weights[j]*J*F        * E_weight
-                        Qy_weighted     += weights[i]*weights[j]*J*Fy       * E_weight
-                        Qz_weighted     += weights[i]*weights[j]*J*Fz       * E_weight
-                        Iyy_weighted    += weights[i]*weights[j]*J*(Fy@Fy)  * E_weight
-                        Izz_weighted    += weights[i]*weights[j]*J*(Fz@Fz)  * E_weight
-                        Iyz_weighted    += weights[i]*weights[j]*J*(Fy@Fz)  * E_weight
+                        A_w      += weights[i]*weights[j]*J*F        * E_weight
+                        Qy_w     += weights[i]*weights[j]*J*Fy       * E_weight
+                        Qz_w     += weights[i]*weights[j]*J*Fz       * E_weight
+                        Iyy_w    += weights[i]*weights[j]*J*(Fy@Fy)  * E_weight
+                        Izz_w    += weights[i]*weights[j]*J*(Fz@Fz)  * E_weight
+                        Iyz_w    += weights[i]*weights[j]*J*(Fy@Fz)  * E_weight
 
                         ## WEIGHTING (BY G)
-                        A_weightedG     += weights[i]*weights[j]*J*F        * G_weight
-                        Qy_weightedG    += weights[i]*weights[j]*J*Fy       * G_weight
-                        Qz_weightedG    += weights[i]*weights[j]*J*Fz       * G_weight
-                        Iyy_weightedG   += weights[i]*weights[j]*J*(Fy@Fy)  * G_weight
-                        Izz_weightedG   += weights[i]*weights[j]*J*(Fz@Fz)  * G_weight
-                        Iyz_weightedG   += weights[i]*weights[j]*J*(Fy@Fz)  * G_weight
+                        A_wG     += weights[i]*weights[j]*J*F        * G_weight
+                        Qy_wG    += weights[i]*weights[j]*J*Fy       * G_weight
+                        Qz_wG    += weights[i]*weights[j]*J*Fz       * G_weight
+                        Iyy_wG   += weights[i]*weights[j]*J*(Fy@Fy)  * G_weight
+                        Izz_wG   += weights[i]*weights[j]*J*(Fz@Fz)  * G_weight
+                        Iyz_wG   += weights[i]*weights[j]*J*(Fy@Fz)  * G_weight
 
    
         ## Determine the weighted centroid (always by E)
-        Y_CG_weighted = float(Qy_weighted / A_weighted)
-        Z_CG_weighted = float(Qz_weighted / A_weighted)
+        Y_CG_w = float(Qy_w / A_w)
+        Z_CG_w = float(Qz_w / A_w)
         ## Bending properties at the Centroid (parallel axis theorem)
-        Iyy_centroid = Iyy_weighted - A_weighted * Y_CG_weighted**2
-        Izz_centroid = Izz_weighted - A_weighted * Z_CG_weighted**2
-        Iyz_centroid = Iyz_weighted - A_weighted * Y_CG_weighted*Z_CG_weighted
+        Iyy_centroid = Iyy_w - A_w * Y_CG_w**2
+        Izz_centroid = Izz_w - A_w * Z_CG_w**2
+        Iyz_centroid = Iyz_w - A_w * Y_CG_w*Z_CG_w
 
         # Without weighting (original properties)
         # self.areaProperties.update(Area=A, Qy=float(Qy), Qz=float(Qz), Iyy=float(Iyy), Izz=float(Izz), Iyz=float(Iyz), Y_CG=Y_CG, Z_CG=Z_CG)
 
         # Weighting by E
         self.areaProperties.update(
-                                 Area_weighted    = float(A_weighted), 
-                                 Qy_weighted      = float(Qy_weighted), 
-                                 Qz_weighted      = float(Qz_weighted), 
-                                 Iyy_weighted     = float(Iyy_weighted), 
-                                 Izz_weighted     = float(Izz_weighted), 
-                                 Iyz_weighted     = float(Iyz_weighted), 
-                                 Y_CG_weighted    = Y_CG_weighted, 
-                                 Z_CG_weighted    = Z_CG_weighted
+                                 A_w        = float(A_w), 
+                                 Qy_w       = float(Qy_w), 
+                                 Qz_w       = float(Qz_w), 
+                                 Iyy_w      = float(Iyy_w), 
+                                 Izz_w      = float(Izz_w), 
+                                 Iyz_w      = float(Iyz_w), 
+                                 Y_CG_w     = Y_CG_w, 
+                                 Z_CG_w     = Z_CG_w
                                )
 
         # Weighting by G (These are mostly for internal calculations, not typically section properties)
-        # self.areaProperties.update(Area_G=A_weightedG, Qy_G=float(Qy_weightedG), Qz_G=float(Qz_weightedG), Iyy_G=float(Iyy_weightedG), Izz_G=float(Izz_weightedG), Iyz_G=float(Iyz_weightedG), Y_CG=Y_CG_weighted, Z_CG=Z_CG_weighted)
+        # self.areaProperties.update(Area_G=A_wG, Qy_G=float(Qy_wG), Qz_G=float(Qz_wG), Iyy_G=float(Iyy_wG), Izz_G=float(Izz_wG), Iyz_G=float(Iyz_wG), Y_CG=Y_CG_w, Z_CG=Z_CG_w)
         # Bending properties
         self.areaProperties.update(
-                                 Iyy_weighted_cent = float(Iyy_centroid), 
-                                 Izz_weighted_cent = float(Izz_centroid), 
-                                 Iyz_weighted_cent = float(Iyz_centroid)
+                                 Iyy_w_cent = float(Iyy_centroid), 
+                                 Izz_w_cent = float(Izz_centroid), 
+                                 Iyz_w_cent = float(Iyz_centroid)
                                )
         return
     ## INERTIA AREA PROPERTIES
@@ -509,8 +520,8 @@ class BeamSection(Mesh, SectionElem):
         Qy_cent_weighted, Qz_cent_weighted, Iyz_cent_weighted = 0,0,0 # E/E0*y dA,  E/E0*y dA, E/E0*y*z dA
         
         # Getting the centroid position
-        Y_CG = self.areaProperties['Y_CG_weighted']
-        Z_CG = self.areaProperties['Z_CG_weighted']
+        Y_CG = self.areaProperties['Y_CG_w']
+        Z_CG = self.areaProperties['Z_CG_w']
         
         # Getting the shear center position
         Y_CT = self.areaProperties['Y_CT']
@@ -900,12 +911,12 @@ class BeamSection(Mesh, SectionElem):
                         Iphiz_weighted   += weights[i]*weights[j]*J*Fz@Fphi * E_weight
             
         # Assembly of the system of equations
-        A   = self.areaProperties['Area_weighted']
-        Qy  = self.areaProperties['Qy_weighted']
-        Qz  = self.areaProperties['Qz_weighted']
-        Izz = self.areaProperties['Izz_weighted']
-        Iyy = self.areaProperties['Iyy_weighted']
-        Iyz = self.areaProperties['Iyz_weighted']
+        A   = self.areaProperties['A_w']
+        Qy  = self.areaProperties['Qy_w']
+        Qz  = self.areaProperties['Qz_w']
+        Izz = self.areaProperties['Izz_w']
+        Iyy = self.areaProperties['Iyy_w']
+        Iyz = self.areaProperties['Iyz_w']
 
         # Coefficient matrix
         M = np.array([[ -Qz, Qy, A],
@@ -1074,7 +1085,7 @@ class BeamSection(Mesh, SectionElem):
             ax.scatter(self.areaProperties['Y_CT'], self.areaProperties['Z_CT'], marker='^', edgecolors='r',facecolors='w', s=100, label='CT')
         # Show the Centroid (CG)
         if showCG:
-            ax.scatter(self.areaProperties['Y_CG_weighted'], self.areaProperties['Z_CG_weighted'], marker='o', edgecolors='b',facecolors='w', s=100, label='CG')
+            ax.scatter(self.areaProperties['Y_CG_w'], self.areaProperties['Z_CG_w'], marker='o', edgecolors='b',facecolors='w', s=100, label='CG')
 
         # ax.set_title(f'Cross Section',fontsize=14,fontweight='bold')
         # ax.set_xlim([np.min(Y),np.max(Y)])
@@ -1091,30 +1102,44 @@ class BeamSection(Mesh, SectionElem):
         return fig, ax
     
     ## PLOT CROSS-SECTION GEOMETRY
-    def plotSec(self, showElemLabel=False, showNodeLabel=False, fillColor:str='#59c1f9', figsize:tuple=None, fontsize=12) -> tuple[plt.Figure, plt.Axes]:
+    def plotSec(self, 
+                showElemLabel   =   False, 
+                showNodeLabel   =   False, 
+                showGaussPoints =   False,
+                fillColor:str   =   '#59c1f9', 
+                figsize:tuple   =   None, 
+                fontsize        =   12) -> tuple[plt.Figure, plt.Axes]:
         '''
         Plots the cross-section geometry.
 
         Parameters
         ----------
-        fillColor : str, optional
-            The color to fill the element polygons. The default is '#59c1f9'.
         showElemLabel : bool, optional
             Show element labels, default False
         showNodeLabel : bool, optional
             Show node labels, default False
+        showGaussPoints : bool, optional
+            Show gauss point positions, default False
+        fillColor : str, optional
+            The color to fill the element polygons. The default is '#59c1f9'.
+        figsize : tuple, optional
+            Figure size, default: None
+        fontsize: int, optional
+            Reference font size. Element label and node label sizes are smaller. Default: 12.
         '''
-        fig, ax      = plt.subplots(figsize=figsize)
-        
-        # Coodinates of main vertices
-        if self.elemType == 'Quad':
-            end = 4
-        elif self.elemType == 'Tri':
-            end = 3        
+        fig, ax      = plt.subplots(figsize=figsize)      
                    
         # Colors
         colors = [fillColor, '#FFA55C', '#BDFA96', '#FADD8E', '#EA8EFA',
                   '#A3E9FA', '#FAA2C1', '#FAF2A2', '#879FA5', '#7A7750']
+        
+        # Mesh element type
+        elemType = self.elemType 
+        # Gauss points notural coordinates
+        points, _ = self._elements[0].getQuadrature(self.intDegree)
+        # Lists to store gauss points
+        Z_gauss = []
+        Y_gauss = []
         
         # Track material change to update fill color
         uniqueMaterials = np.array([])
@@ -1183,12 +1208,57 @@ class BeamSection(Mesh, SectionElem):
                 nodesIndices = elem.getNodeIndices()
                 for k,coord in enumerate(nodesCoords):
                     ax.text(coord[1],coord[2], nodesIndices[k], 
-                            fontsize=fontsize-4, c='m', ha='left',va='top')
+                            fontsize=fontsize-4, c='m', ha='left',va='top', style='italic')
+            
+            # Show gauss points
+            if showGaussPoints:
+                # Element degrees of freedom 
+                elementDof = self.getElemDof(elem)
+
+                # Node coordinates 
+                ys = self._nodeCoords[elementDof,1]
+                zs = self._nodeCoords[elementDof,2]
+
+
+                # Quadrature for the element; Iterates through Gaussian points
+                if elemType == 'Tri':
+                    for coords in points:
+                        #      i: index
+                        # coord: natural coordinates of the point (zeta1,zeta2,zeta3)
+
+                        # Shape functions and Jacobian
+                        N = elem.getShapeFun(coords)
+                        
+                        # Z coordinate _______________________________
+                        z_gp    = N@zs                       # Gaussian point position 
+                        Z_gauss = np.append(Z_gauss, z_gp)
+
+                        # Y coordinate _______________________________
+                        y_gp    = N@ys                       # Gaussian point position 
+                        Y_gauss = np.append(Y_gauss, y_gp)
+
+                elif elemType == 'Quad':
+                    for coord_j in points:
+                        for coord_i in points:
+                            #      i: index
+                            # coord: natural coordinates of the point (zeta1,zeta2)
+                            coords = [coord_i, coord_j]
+                            
+                            # Shape functions and Jacobian
+                            N = elem.getShapeFun(coords)
+                            
+                            # Z coordinate _______________________________
+                            z_gp    = N@Zs
+                            Z_gauss = np.append(Z_gauss, z_gp)
+
+                            # Y coordinate _______________________________
+                            y_gp    = N@Ys
+                            Y_gauss = np.append(Y_gauss, y_gp)
+
         
-        # # Get valid nodes coordinates
-        # vn = self._validNodes
-        # Ys = self._nodeCoords[vn,1]
-        # Zs = self._nodeCoords[vn,2]
+        # Plot gauss points
+        if showGaussPoints:
+            ax.scatter(Y_gauss,Z_gauss,c='k',alpha=.25,marker='x',s=2)
         
         Ys = self._nodeCoords[:,1]
         Zs = self._nodeCoords[:,2]
@@ -1197,7 +1267,7 @@ class BeamSection(Mesh, SectionElem):
         ax.set_title(f'Cross Section',fontsize=14,fontweight='bold')
         ax.set_xlim([np.min(Ys),np.max(Ys)])
         ax.set_ylim([np.min(Zs),np.max(Zs)])
-        ax.legend(title='Material')
+        ax.legend(title='Material',bbox_to_anchor=(1, 1))
         # plt.tight_layout()
         return fig, ax
     
@@ -1363,18 +1433,27 @@ class BeamSection(Mesh, SectionElem):
                         t2 = gauss_connec[:,[k,k+Ngp*m+1,k+Ngp*m]]
                         np.vstack([connect, t1, t2])
                 else: 
+                    # Triangulation for tris is complicated, has to be dealt in case by case
+                    # because of gauss point enumeration
                     match Y_gauss.shape[1]:
                         case 3:
                             t0 = gauss_connec[:,[0,1,2]]
                             connect = t0
                         case 6:
-                            t0 = gauss_connec[:,[0,1,4]]
-                            t1 = gauss_connec[:,[1,2,4]]
-                            t2 = gauss_connec[:,[2,5,4]]
-                            t3 = gauss_connec[:,[5,6,4]]
-                            t4 = gauss_connec[:,[6,3,4]]
-                            t5 = gauss_connec[:,[3,0,4]]
+                            t0 = gauss_connec[:,[4,0,2]]
+                            t1 = gauss_connec[:,[0,5,2]]
+                            t2 = gauss_connec[:,[5,1,2]]
+                            t3 = gauss_connec[:,[1,3,2]]
+                            connect = np.vstack([t0,t1,t2,t3])
+                        case 7:
+                            t0 = gauss_connec[:,[2,4,0]]
+                            t1 = gauss_connec[:,[4,3,0]]
+                            t2 = gauss_connec[:,[3,5,0]]
+                            t3 = gauss_connec[:,[5,1,0]]
+                            t4 = gauss_connec[:,[1,6,0]]
+                            t5 = gauss_connec[:,[6,2,0]]
                             connect = np.vstack([t0,t1,t2,t3,t4,t5])
+                            
                         case _:
                             raise NotImplementedError(f'Triagulation not implemented for degree {degree} quadrature points.')
 
