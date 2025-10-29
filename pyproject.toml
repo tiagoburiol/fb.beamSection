@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name 		= "FlightBEND"
-version 	= "1.0.0"
+version 	= "1.0.1"
 description = "A Python package for flexible body dynamics simulation of airframes"
 readme 		= "README.md"
 authors 	= [{ name = "Pedro Pires", email = "pfmppedro@gmail.com" },{ name = "Tiago Buriol", email = "tiago.buriol@ufsm.br" }]
