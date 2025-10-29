@@ -18,6 +18,9 @@ class Node:
     
     ## --------------------- Constructor --------------------- ##
     def __init__(self, coords:np.ndarray, index:int = None):
+        if type(coords) in [int, float]:
+            raise Exception('Coodinates must be an array or list')
+        
         # Converts input to an array
         if type(coords) is not np.ndarray:
             self._coords = np.array(coords)
