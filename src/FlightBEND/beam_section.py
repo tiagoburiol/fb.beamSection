@@ -1,10 +1,12 @@
+# Get definitions from the geometry module
 from .fem_geometry          import *
 
 import numpy as np
-import matplotlib.pyplot as plt
 import time
 from itertools import product
 
+# Plotting functions
+import matplotlib.pyplot as plt
 from matplotlib             import gridspec, tri
 from matplotlib.patches     import Polygon
 from matplotlib.axes._axes  import Axes
@@ -95,7 +97,7 @@ class BeamSection(Mesh, SectionElem):
         self.forces             = np.zeros([self.totalDofs,1])
         self.phiStar            = np.zeros([self.totalDofs,1])
         self.areaProperties     = {}
-        self.inertiaProperties  = {}
+        self.massProperties  = {}
         self.intDegree          = intDegree
         
         # List for timing
@@ -116,143 +118,13 @@ class BeamSection(Mesh, SectionElem):
             return
         else:
             self.simulate(displayTimes=displayTimes)
-        
 
     
-        
-    ## --------------------- Getters --------------------- ##
-    ## GET AREA PROPERTIES
-    def getAreaProperties(self) -> dict[str,float]:
-        '''
-        Gets the area properties of the section.
-
-        Returns
-        -------
-        areaProps : dict
-            Dictionary of area properties.
-        '''
-        return self.areaProperties
-
-        ## ----------------- Public Methods ----------------- ## 
-    ## CALCULATE SHEAR STRESSES AT QUADRATURE POINTS
-    def calcShearStresses(self, degree:int=4, twistRate:float=None, mises:bool=False) -> tuple[np.ndarray, np.ndarray]:
-        '''Calculate shear stresses at quadrature points of a given degree.
-        
-        Parameters
-        ----------
-        degree : int, optional
-            Quadrature degree for the sampling points. The default is 4.
-        twistRate : float, optional
-            Twist rate, if not given stresses are calculated per units of twist rate.
-        mises : bool, optional
-            Caculate stress magnitude as mises equivalent stress. Default: True
-        
-        Returns
-        -------
-        stresses : numpy.ndarray
-            XY and XZ shear stress components at gauss points.
-        gauss_points : numpy.ndarray
-            Position of the gauss points.
-        '''
-        points, _   = self._elements[0].getQuadrature(degree)   # Calculating at Gaussian points
-        # points, _   = [-1, 0, 1]                           # Calculating at nodes
-        # points      = [-1, 0, 1] if POS == 'nodes' else self._elements[0].quadrature(degree)
-        
-        # Initializing stress and gaussian points lists 
-        tau_xy      = np.array([])
-        tau_xz      = np.array([])
-        Y_gauss     = np.array([])
-        Z_gauss     = np.array([])
-        
-        # Get shear center position
-        Y_CT = self.areaProperties['Y_CT']
-        Z_CT = self.areaProperties['Z_CT']
-        
-        # Reads element type
-        elemType = self._elements[0].elemType
-        
-        # Iterate through elements
-        for e,elem in enumerate(self._elements):
-
-            # Element degrees of freedom 
-            elementDof = self.getElemDof(elem)
-            # elementDof = np.array(self._elementsNodes)[e, :]
-
-            # Node coordinates w.r.t the shear center
-            ys = self._nodeCoords[elementDof,1] - Y_CT
-            zs = self._nodeCoords[elementDof,2] - Z_CT
-            
-            # Nodal warping displacements for the element
-            phi = self.displacements[elementDof]
-            
-            # Element shear modulus
-            G   = self.G[e]
-
-            # Quadrature for the element; Iterates through Gaussian points
-            if elemType == 'Tri':
-                for i, coords in enumerate(points):
-                    #      i: index
-                    # coord: natural coordinates of the point (zeta1,2,3)
-
-                    # Shape functions and Jacobian
-                    N = elem.getShapeFun(coords)
-                    J, By, Bz = elem.getJacob(coords)
-                    
-                    # Normalized tau_xy _______________________________
-                    z_gp    = N@zs                       # Gaussian point position w.r.t CT
-                    txy     = By@phi - z_gp
-                    tau_xy  = np.append(tau_xy, txy)
-                    Z_gauss = np.append(Z_gauss, z_gp)
-
-                    # Normalized tau_xz _______________________________
-                    y_gp    = N@ys                       # Gaussian point position w.r.t CT
-                    txz     = Bz@phi + y_gp
-                    tau_xz  = np.append(tau_xz, txz)
-                    Y_gauss = np.append(Y_gauss, y_gp)
-
-            elif elemType == 'Quad':
-                for j, coord_j in enumerate(points):
-                    for i, coord_i in enumerate(points):
-                        #      i: index
-                        # coord: natural coordinates of the point (zeta1,2,3)
-                        coords = [coord_i, coord_j]
-                        
-                        # Shape functions and Jacobian
-                        N = elem.getShapeFun(coords)
-                        J, By, Bz = elem.getJacob(coords) # (ys,zs): element nodes, coords: zeta coordinates of the Gaussian point
-                            
-                        # tau_xy _______________________________
-                        Z       = N@zs
-                        z_gp    = Z                          # Gaussian point position w.r.t CT
-                        txy     = (By@phi - z_gp)*G
-                        tau_xy  = np.append(tau_xy, txy)
-                        Z_gauss = np.append(Z_gauss, Z)
-
-                        # tau_xz _______________________________
-                        Y       = N@ys
-                        y_gp    = Y                          # Gaussian point position w.r.t CT
-                        txz     = (Bz@phi + y_gp)*G
-                        tau_xz  = np.append(tau_xz, txz)
-                        Y_gauss = np.append(Y_gauss, Y)
-
-                #      print('End i')
-                # print('End j')
-        
-        
-        if mises:
-            tau_xy = np.sqrt(3)*tau_xy
-            tau_xz = np.sqrt(3)*tau_xz        
-        if twistRate is not None:
-            tau_xy = twistRate*tau_xy
-            tau_xz = twistRate*tau_xz
-        
-        # Pack results into tuples
-        stresses    = tau_xy, tau_xz
-        gaussPoints = Y_gauss, Z_gauss
-                
-        return stresses, gaussPoints
- 
-    ## ----------------- Private Methods ----------------- ## 
+    
+    ## =================================================== ## 
+    ##                   Private Methods                   ## 
+    ## =================================================== ## 
+    
     ## TORSIONAL CONSTANT
     def __calcTorsionalConstant(self, degree=2):
         '''
@@ -505,7 +377,7 @@ class BeamSection(Mesh, SectionElem):
                                )
         return
     ## INERTIA AREA PROPERTIES
-    def __calcInertiaProperties(self): 
+    def __calcMassProperties(self): 
         '''
         Calculates the inertia properties (mass moments) of a composite section.
         '''
@@ -641,7 +513,7 @@ class BeamSection(Mesh, SectionElem):
                         
                         
         # UPDATING INERTIA PROPERTIES
-        self.inertiaProperties.update(   
+        self.massProperties.update(   
                                          rho_l          = float(rho_l        ),
                                          Qy_rho         = float(Qy_rho       ),
                                          Qz_rho         = float(Qz_rho       ),
@@ -933,8 +805,199 @@ class BeamSection(Mesh, SectionElem):
     
         return
     
+    
+    
+    ## =================================================== ## 
+    ##                   Public Methods                    ## 
+    ## =================================================== ## 
+    
+    ## --------------------- Getters --------------------- ##
+    ## GET AREA PROPERTIES
+    def getAreaProperties(self) -> dict[str,float]:
+        '''
+        Gets the area properties of the section. 
         
-    ## --------------------- Other methods --------------------- ##    
+        Note: The reference moduli are always taken to be the first entry on the material properties lists (E0 = E[0], G0 = G[0])
+
+        Returns
+        -------
+        areaProps : dict
+            Dictionary of area properties.
+            
+        | Key        	| Description                                                                                                                           	| Dimension  	    
+        |------------	|---------------------------------------------------------------------------------------------------------------------------------------	|-------------	
+        | A_w        	| Weighted Area (∫(E/E0)dA). Area weighted by the ratio of the elastic modulus to a reference modulus (E0).                             	| L^2          	
+        | Qy_w       	| Weighted First Moment of Area about Z-axis (∫y(E/E0)dA). Used to locate the centroid.                                                 	| L^3          	
+        | Qz_w       	| Weighted First Moment of Area about Y-axis (∫z(E/E0)dA). Used to locate the centroid.                                                 	| L^3          	
+        | Y_CG_w     	| Y-coordinate of the Weighted Centroid.                                                                                  	                | L           	
+        | Z_CG_w     	| Z-coordinate of the Weighted Centroid.                                                                                  	                | L           	
+        | Iyy_w      	| Weighted Second Moment of Area about Z-axis (∫y^2(E/E0)dA), w.r.t the global origin.                                                   	| L^4          	
+        | Izz_w      	| Weighted Second Moment of Area about Y-axis (∫z^2(E/E0)dA), w.r.t the global origin.                                                   	| L^4          	
+        | Iyz_w      	| Weighted Product of Inertia (∫yz(E/E0)dA), w.r.t the global origin.                                                                   	| L^4          	
+        | Iyy_w_cent 	| Weighted Second Moment of Area about the Centroid z-axis.                                                                 	            | L^4          	
+        | Izz_w_cent 	| Weighted Second Moment of Area about the Centroid y-axis.                                                                 	            | L^4          	
+        | Iyz_w_cent 	| Weighted Product of Inertia about the Centroid.                                                                                 	        | L^4          	
+        | J_phi      	| Torsional Constant. Calculated from the warping function φ.                                            	                                | L^4          	
+        | J_phi_w_G  	| Torsional Constant Weighted by a reference Shear Modulus G0 (∫(G/G0)(…)dA).                                                               | L^4          	
+        | Y_CT       	| Y-coordinate of the Shear Center (Y_CT). Calculated from the BVP correction.                                                           	| L           	
+        | Z_CT       	| Z-coordinate of the Shear Center (Z_CT). Calculated from the BVP correction.                                                           	| L           	
+        | c_CT       	| Warping Function Correction Constant (c_CT). Part of the final warping solution φ=φ∗+Y_CTz−Z_CTy−c_CT.                                    | L^2          	
+        | Qy_cent_w  	| First Moment of Area about Z-axis at the Centroid (∫ycent(E/E0)dA). This value should theoretically be zero but is stored for checks. 	| L^3          	
+        | Qz_cent_w  	| First Moment of Area about Y-axis at the Centroid (∫zcent(E/E0)dA). This value should theoretically be zero but is stored for checks. 	| L^3          	
+            
+        '''
+        return self.areaProperties
+
+        ## ----------------- Public Methods ----------------- ## 
+    ## GET MASS PROPERTIES
+    def getMassProperties(self) -> dict[str,float]:
+        '''
+        Gets the area mass properties of the section.
+        
+        Note: The reference moduli are always taken to be the first entry on the material properties lists (E0 = E[0], G0 = G[0])
+
+
+        Returns
+        -------
+        massProps : dict
+            Dictionary of area properties.
+            
+        | Key           	| Description                                                                       	| Dimension 	|
+        |---------------	|-----------------------------------------------------------------------------------	|-----------	|
+        | rho_l         	| Total Mass (Density-Weighted Area) (∫ ρ dA).                                      	| M         	|
+        | Qy_rho        	| First Mass Moment about Z-axis (∫ y*ρ dA).                                        	| M *L      	|
+        | Qz_rho        	| First Mass Moment about Y-axis (∫ z*ρ dA).                                        	| M *L      	|
+        | Iyy_rho       	| Mass Moment of Inertia about Z-axis (∫ y^2*ρ dA).                                 	| M *L^2    	|
+        | Izz_rho       	| Mass Moment of Inertia about Y-axis (∫ z^2*ρ dA).                                 	| M *L^2    	|
+        | Iyz_rho       	| Mass Product of Inertia (∫ y*z*ρ dA).                                             	| M *L^2    	|
+        | I_phi_rho     	| Warping Mass Moment (∫ φ*ρ dA).                                                   	| M *L^3    	|
+        | I_phi_phi_rho 	| Second Warping Mass Moment of Inertia (∫ φ^2*ρ dA).                               	| M *L^4    	|
+        | I_phi_y_rho   	| Warping-Y Mass Moment of Inertia (∫ φ*y*ρ dA), relative to the Shear Center (CT). 	| M *L^3    	|
+        | I_phi_z_rho   	| Warping-Z Mass Moment of Inertia (∫ φ*z*ρ dA), relative to the Shear Center (CT). 	| M *L^3    	|
+        | I_phi_yy_rho  	| Warping-Y^2 Mass Moment of Inertia (∫ φ*y^2*ρ dA).                                	| M *L^4    	|
+        | I_phi_zz_rho  	| Warping-Z^2 Mass Moment of Inertia (∫ φ*z^2*ρ dA).                                	| M *L^4    	|
+        | I_phi_yz_rho  	| Warping-YZ Mass Product of Inertia (∫ φ*y*z*ρ dA).                                	| M *L^4    	|
+        '''
+        return self.massProperties
+    
+    ## ------------------ Other methods ------------------ ##    
+    ## CALCULATE SHEAR STRESSES AT QUADRATURE POINTS
+    def calcShearStresses(self, degree:int=4, twistRate:float=None, mises:bool=False) -> tuple[np.ndarray, np.ndarray]:
+        '''Calculate shear stresses at quadrature points of a given degree.
+        
+        Parameters
+        ----------
+        degree : int, optional
+            Quadrature degree for the sampling points. The default is 4.
+        twistRate : float, optional
+            Twist rate, if not given stresses are calculated per units of twist rate.
+        mises : bool, optional
+            Caculate stress magnitude as mises equivalent stress. Default: True
+        
+        Returns
+        -------
+        stresses : numpy.ndarray
+            XY and XZ shear stress components at gauss points.
+        gauss_points : numpy.ndarray
+            Position of the gauss points.
+        '''
+        points, _   = self._elements[0].getQuadrature(degree)   # Calculating at Gaussian points
+        # points, _   = [-1, 0, 1]                           # Calculating at nodes
+        # points      = [-1, 0, 1] if POS == 'nodes' else self._elements[0].quadrature(degree)
+        
+        # Initializing stress and gaussian points lists 
+        tau_xy      = np.array([])
+        tau_xz      = np.array([])
+        Y_gauss     = np.array([])
+        Z_gauss     = np.array([])
+        
+        # Get shear center position
+        Y_CT = self.areaProperties['Y_CT']
+        Z_CT = self.areaProperties['Z_CT']
+        
+        # Reads element type
+        elemType = self._elements[0].elemType
+        
+        # Iterate through elements
+        for e,elem in enumerate(self._elements):
+
+            # Element degrees of freedom 
+            elementDof = self.getElemDof(elem)
+            # elementDof = np.array(self._elementsNodes)[e, :]
+
+            # Node coordinates w.r.t the shear center
+            ys = self._nodeCoords[elementDof,1] - Y_CT
+            zs = self._nodeCoords[elementDof,2] - Z_CT
+            
+            # Nodal warping displacements for the element
+            phi = self.displacements[elementDof]
+            
+            # Element shear modulus
+            G   = self.G[e]
+
+            # Quadrature for the element; Iterates through Gaussian points
+            if elemType == 'Tri':
+                for i, coords in enumerate(points):
+                    #      i: index
+                    # coord: natural coordinates of the point (zeta1,2,3)
+
+                    # Shape functions and Jacobian
+                    N = elem.getShapeFun(coords)
+                    J, By, Bz = elem.getJacob(coords)
+                    
+                    # Normalized tau_xy _______________________________
+                    z_gp    = N@zs                       # Gaussian point position w.r.t CT
+                    txy     = By@phi - z_gp
+                    tau_xy  = np.append(tau_xy, txy)
+                    Z_gauss = np.append(Z_gauss, z_gp)
+
+                    # Normalized tau_xz _______________________________
+                    y_gp    = N@ys                       # Gaussian point position w.r.t CT
+                    txz     = Bz@phi + y_gp
+                    tau_xz  = np.append(tau_xz, txz)
+                    Y_gauss = np.append(Y_gauss, y_gp)
+
+            elif elemType == 'Quad':
+                for j, coord_j in enumerate(points):
+                    for i, coord_i in enumerate(points):
+                        #      i: index
+                        # coord: natural coordinates of the point (zeta1,2,3)
+                        coords = [coord_i, coord_j]
+                        
+                        # Shape functions and Jacobian
+                        N = elem.getShapeFun(coords)
+                        J, By, Bz = elem.getJacob(coords) # (ys,zs): element nodes, coords: zeta coordinates of the Gaussian point
+                            
+                        # tau_xy _______________________________
+                        Z       = N@zs
+                        z_gp    = Z                          # Gaussian point position w.r.t CT
+                        txy     = (By@phi - z_gp)*G
+                        tau_xy  = np.append(tau_xy, txy)
+                        Z_gauss = np.append(Z_gauss, Z)
+
+                        # tau_xz _______________________________
+                        Y       = N@ys
+                        y_gp    = Y                          # Gaussian point position w.r.t CT
+                        txz     = (Bz@phi + y_gp)*G
+                        tau_xz  = np.append(tau_xz, txz)
+                        Y_gauss = np.append(Y_gauss, Y)
+
+                #      print('End i')
+                # print('End j')
+        
+        
+        if mises:
+            tau_xy = np.sqrt(3)*tau_xy
+            tau_xz = np.sqrt(3)*tau_xz        
+        if twistRate is not None:
+            tau_xy = twistRate*tau_xy
+            tau_xz = twistRate*tau_xz
+        
+        # Pack results into tuples
+        stresses    = tau_xy, tau_xz
+        gaussPoints = Y_gauss, Z_gauss
+                
+        return stresses, gaussPoints
     ## PLOT WARPING DISPLACEMENT
     def plotWarping(self, 
                     levels      :int    = 20, 
@@ -1100,9 +1163,8 @@ class BeamSection(Mesh, SectionElem):
         fig.tight_layout()
         
         return fig, ax
-    
     ## PLOT CROSS-SECTION GEOMETRY
-    def plotSec(self, 
+    def plotSection(self, 
                 showElemLabel   =   False, 
                 showNodeLabel   =   False, 
                 showGaussPoints =   False,
@@ -1270,7 +1332,6 @@ class BeamSection(Mesh, SectionElem):
         ax.legend(title='Material',bbox_to_anchor=(1, 1))
         # plt.tight_layout()
         return fig, ax
-    
     ## PLOT SHEAR STRESS DISTRIBUITION
     def plotShearStresses(self, 
                           degree        :int    = 2, 
@@ -1557,7 +1618,6 @@ class BeamSection(Mesh, SectionElem):
         fig.tight_layout()
 
         return fig, ax
-    
     ## CREATE GID POST-PROCESSING FILES
     def toGid(self, filename:str):
         '''
@@ -1619,7 +1679,6 @@ class BeamSection(Mesh, SectionElem):
         
         # Console message
         print(f'File Saved: {res_file}\n')
-   
     ## START CROSS-SECTION CALCULATIONS
     def simulate(self, displayTimes=True):
         '''Start simulation: calculate area properties, solve warping, solve shear center'''
@@ -1646,8 +1705,8 @@ class BeamSection(Mesh, SectionElem):
         # Warping solution
         self.__solveWarping(degree=self.intDegree)
 
-        # Determine inertia properties
-        self.__calcInertiaProperties()
+        # Determine mass properties
+        self.__calcMassProperties()
         
         # Display times
         if displayTimes:
