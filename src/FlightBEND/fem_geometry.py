@@ -981,6 +981,14 @@ class Mesh:
             self._nodes     = mesh_nodes
             
             self._elementsNodes = connectivity
+            
+            # Check if the coordinates are 2D
+            if np.shape(coordinates)[1] == 2:
+                # Create an column array of zeros
+                nElems = np.shape(coordinates)[0]
+                zerosX = np.zeros(nElems).reshape(-1,1)
+                # Add to coordinates array
+                coordinates = np.hstack([zerosX, coordinates])
             self._nodeCoords    = coordinates
             
             ## Generate degree of freedom and valid nodes list
