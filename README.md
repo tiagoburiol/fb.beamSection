@@ -5,7 +5,6 @@ A Saint-Venant Torsion Module for the FlightBEND Finite Element Framework
 [![PyPI version](https://badge.fury.io/py/FlightBEND.svg)](https://pypi.org/project/FlightBEND/1.0.0/) 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17460543.svg)](https://doi.org/10.5281/zenodo.17460543) 
 
-
 ## Overview
 
 This repository contains the **Saint-Venant Torsion Module**, developed for the **FlightBEND Finite Element Framework**, a Python-based environment for numerical simulation in solid and structural mechanics, which is an ongoing development project.
@@ -37,7 +36,7 @@ The resulting linear system is assembled using FlightBEND’s internal FEM infra
 
 ## Usage
 
-See the [multicell profile example](https://github.com/tiagoburiol/fb.beamSection/blob/main/notebooks/multicell_profile_example.ipynb).
+See the [multicell profile example](https://github.com/tiagoburiol/fb.beamSection/blob/main/tutorials/multicell_profile_example.ipynb).
 
 ![Distribution of the warping function and Shear stress distribution](https://raw.githubusercontent.com/tiagoburiol/fb.beamSection/refs/heads/main/images/fig1_readme.png)
 
@@ -56,6 +55,16 @@ jupyter-notebook notebooks/multicell_profile_example.ipynb
 Other examples of usage can be found in [fb.beamSection/examples](https://github.com/tiagoburiol/fb.beamSection/tree/main/examples). The figure below is from the [wing_torsion_box.ipynb](https://github.com/tiagoburiol/fb.beamSection/blob/main/examples/5_wing_torsion_box/wing_torsion_box.ipynb) example.
 
 ![Warping function](https://raw.githubusercontent.com/tiagoburiol/fb.beamSection/refs/heads/main/images/fig2_readme.png)
+
+## Install on pip
+
+You can also install the `flightbend` package direcly from PyPl on the comand prompt (Windows) or Linux terminal:
+
+```powershell
+pip install flightbend
+```
+
+*Note : Clone the repository to get the most up-to-date version. PyPl updates may be infrequent*. 
 
 ## Verification
 
